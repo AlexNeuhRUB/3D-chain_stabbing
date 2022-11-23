@@ -68,7 +68,20 @@ def computeStabber(sampleArray):
         curveList.append(sampleArray[i][int(xf[i])])
     return(np.array(curveList))
 
-
+def outerTangents(r1,c1,r2,c2):
+    if(r1 < r2):
+        rTmp=r2
+        cTmp=c2
+        r2=r1
+        c2=c1
+        r1=rTmp
+        c1=cTmp
+    r3 = r1 - r2
+    h = np.linalg.norm(c1-c2)
+    phi1 = np.arctan2(c2[1]-c1[1], c2[0]-c1[0]) + np.arccos(r3/h)
+    phi2 = np.arctan2(c2[1]-c1[1], c2[0]-c1[0]) - np.arccos(r3/h)
+    t1=[[c1[0]+r1*np.cos(phi1),c1[1]+r1*np.sin(phi1)],[c2[0]+r2*np.cos(phi1),c2[0]+r2*np.sin(phi1)]]
+    t2=[[c1[0]+r1*np.cos(phi2),c1[1]+r1*np.sin(phi2)],[c2[0]+r2*np.cos(phi2),c2[0]+r2*np.sin(phi2)]]
 def isStabbable(balls):
     return(len(balls)<=3)
 
