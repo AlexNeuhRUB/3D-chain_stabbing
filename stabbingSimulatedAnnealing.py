@@ -6,6 +6,7 @@ Created on Thu Nov 17 14:37:15 2022
 """
 
 import numpy as np
+import math
 import matplotlib.pyplot as plt
 from scipy import optimize
 from ballSampling import rejection_sampling
@@ -69,6 +70,52 @@ def computeStabber(sampleArray):
     return(np.array(curveList))
 
 def outerTangents(r1,c1,r2,c2):
+    angle1 = math.atan2(c2[1]-c1[1],c2[0]-c1[0])
+    angle2 = math.acos((r1-r2)/np.linalg.norm(c1-c2))
+    
+    t1StartX=c1[0]+math.cos(angle1+angle2)*r1
+    t1StartY=c1[1]+math.sin(angle1+angle2)*r1
+    t1EndX=c2[0]+math.cos(angle1+angle2)*r2
+    t1EndY=c2[1]+math.sin(angle1+angle2)*r2
+    
+    t2StartX=c1[0]+np.cos(angle1-angle2)*r1
+    t2StartY=c1[1]+np.sin(angle1-angle2)*r1
+    t2EndX=c2[0]+np.cos(angle1-angle2)*r2
+    t2EndY=c2[1]+np.sin(angle1-angle2)*r2
+    
+    
+    t1 = [[t1StartX,t1StartY],[t1EndX,t1EndY]]
+    t2 = [[t2StartX,t2StartY],[t2EndX,t2EndY]]
+    return t1,t2
+
+
+
+def convertCoordinates(p1,p2,p3):#p1 should be center of ball 1, since we project it on 0,0 and p2 to be on x axis
+
+    u=p2-p1
+    v=p3-p1
+    
+    u=u/np.linalg.norm(u)
+    v=v/np.linalg.norm(v)
+    
+    
+    #project p1 to [0,0], hence move p2,p3 accordingly
+    p2_x = np.dot(u,p2-p1)
+    p2_y = np.dot(v,p2-p1)
+    
+    p3_x = np.dot(u,p3-p1)
+    p3_y = np.dot(v,p3-p1)
+    
+    #rotate projected points
+    alpha = np.arctan2(p2_y,p2_x)
+    p2_xx = p2_x * np.cos(alpha) + p2_y * np.sin(alpha)
+    p2_yy = -p2_x * np.sin(alpha) + p2_y * np.cos(alpha)
+    p3_xx = p3_x * np.cos(alpha) + p3_y * np.sin(alpha)
+    p3_yy = -p3_x * np.sin(alpha) + p3_y * np.cos(alpha)
+    
+    return np.array((0,0)),np.array((round(p2_xx,4),round(p2_yy,4))),np.array((round(p3_xx,4),round(p3_yy,4)))
+
+def swapIfBigger(r1,c1,r2,c2):
     if(r1 < r2):
         rTmp=r2
         cTmp=c2
@@ -76,15 +123,36 @@ def outerTangents(r1,c1,r2,c2):
         c2=c1
         r1=rTmp
         c1=cTmp
-    r3 = r1 - r2
-    h = np.linalg.norm(c1-c2)
-    phi1 = np.arctan2(c2[1]-c1[1], c2[0]-c1[0]) + np.arccos(r3/h)
-    phi2 = np.arctan2(c2[1]-c1[1], c2[0]-c1[0]) - np.arccos(r3/h)
-    t1=[[c1[0]+r1*np.cos(phi1),c1[1]+r1*np.sin(phi1)],[c2[0]+r2*np.cos(phi1),c2[0]+r2*np.sin(phi1)]]
-    t2=[[c1[0]+r1*np.cos(phi2),c1[1]+r1*np.sin(phi2)],[c2[0]+r2*np.cos(phi2),c2[0]+r2*np.sin(phi2)]]
-def isStabbable(balls):
-    return(len(balls)<=3)
+    return c1,r1,c2,r2
 
+def checkContainment(c1,r1,c2,r2,p):
+    p1,p2,p3 = convertCoordinates(c1,c2,p)
+    t1,t2 = outerTangents(r1, p1, r2, p2)
+    t1A = t1[0]
+    t1B=t1[1]
+    #print(t1)
+    t2A = t2[0]
+    t2B=t2[1]
+    
+    if((np.linalg.norm(p-c1)<r1) or (np.linalg.norm(p-c2)<r2)):
+        return True
+    else:
+        sign1 = (p[0]-t1A[0])*(t1B[1]-t1A[1])-(p[1]-t1A[1])*(t1B[0]-t1A[0])
+        sign2 = (p[0]-t2A[0])*(t2B[1]-t2A[1])-(p[1]-t2A[1])*(t2B[0]-t2A[0])
+        print(sign2)
+        if((sign1 >= 0 and sign2 <=0) and (np.linalg.norm(np.array((p[0],0))-p1)<=np.linalg.norm(p1-p2)) and (np.linalg.norm(np.array((p[0],0))-p2)<=np.linalg.norm(p1-p2))):
+            return True
+        return False
+    
+def isStabbable(balls):
+    n = len(balls)
+    if n<3:
+        return True
+    else:
+        for j in range(1,n-1):
+            for i in range(j-1):
+                for k in range(j+1,n):
+                    c1 = balls[j][0] 
 
 def twoApproximation(balls):#see guibas
     start = 0;
@@ -100,10 +168,33 @@ def twoApproximation(balls):#see guibas
 #curve = computeStabber(sampleArray)
 
 curve = twoApproximation(sampleArray)
-print(curve)
 
+
+
+c1,c2,p = convertCoordinates(np.array((0,0,1)),np.array((2,1,1)),np.array((0,1,1)))
+t1,t2 = outerTangents(.5,c1,1.5,c2)
+print(checkContainment(c1,.5,c2,1.5,p))
+
+
+c1= plt.Circle((c1[0],c1[1]), .5, color = 'r')
+c2= plt.Circle((c2[0],c2[1]), 1.5, color = 'b')
+fig, ax = plt.subplots()
+plt.xlim(-2, 5)
+plt.ylim(-2, 5)
+ax.plot(p[0],p[1], 'o', color = 'g')
+t1xs=[t1[0][0],t1[1][0]]
+t1ys=[t1[0][1],t1[1][1]]
+ax.plot(t1xs,t1ys, color='black')
+t2xs=[t2[0][0],t2[1][0]]
+t2ys=[t2[0][1],t2[1][1]]
+ax.plot(t2xs,t2ys, color='black')
+ax.add_patch(c1)
+ax.add_patch(c2)
+ax.set_aspect('equal', adjustable='datalim')
+ax.plot()
+plt.show()
 #plot starts here
-fig, ax = plt.subplots(1, 1, subplot_kw={'projection':'3d', 'aspect':'auto'})
-for i in range(len(sampleArray)):
-    ax.scatter(sampleArray[i][:,0], sampleArray[i][:,1], sampleArray[i][:,2], s=10, c='r', zorder=10)
-ax.plot(curve[:,0], curve[:,1], curve[:,2], color = 'black')
+#fig, ax = plt.subplots(1, 1, subplot_kw={'projection':'3d', 'aspect':'auto'})
+#for i in range(len(sampleArray)):
+#    ax.scatter(sampleArray[i][:,0], sampleArray[i][:,1], sampleArray[i][:,2], s=10, c='r', zorder=10)
+#ax.plot(curve[:,0], curve[:,1], curve[:,2], color = 'black')
