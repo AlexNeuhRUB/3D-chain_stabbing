@@ -144,22 +144,36 @@ def checkContainment(c1,r1,c2,r2,p):
             return True
         return False
     
-def isStabbable(balls):
+def pruneSamples(balls,samples):
     n = len(balls)
     if n<3:
-        return True
+        return samples
     else:
         for j in range(1,n-1):
             for i in range(j-1):
                 for k in range(j+1,n):
-                    c1 = balls[j][0] 
+                    c1 = balls[j][0]
+                    r1 = balls[j][1]
+                    c2 = balls[k][0]
+                    r2 = balls[k][1]
+                    samples[i] = [p for p in samples[i] if checkContainment(c1, r1, c2, r2, p)]
+    return samples
 
-def twoApproximation(balls):#see guibas
+def isStabbable(balls, samples):
+    if len(samples) <3:
+        return True
+    samples = pruneSamples(balls, samples)
+    for i in len(samples):
+        if len(samples[i])==0:
+            return False
+    return True
+    
+def twoApproximation(balls, samples):#see guibas
     start = 0;
     stabber=[]
     for i in range(len(balls)):
-        if not isStabbable(balls[start:i:1]):
-            temp=computeStabber(balls[start:i:1])
+        if not isStabbable(balls[start:i:1],samples[start:i:1]):
+            temp=computeStabber(samples[start:i:1])
             for j in range(len(temp)):
                 stabber.append(temp[j])
             start = i
