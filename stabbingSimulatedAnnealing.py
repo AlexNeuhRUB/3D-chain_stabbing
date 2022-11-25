@@ -10,43 +10,53 @@ import math
 import matplotlib.pyplot as plt
 from scipy import optimize
 from ballSampling import rejection_sampling
+from readData import oneTrack
 
+print('parsingSingleTrack')        
+track=oneTrack()
+balls=[]
+samples=[]
+print('StartSampling')
+for i in range(len(track)):
+    balls.append([track[i],1])
+    samples.append(rejection_sampling(3,1,track[i],30))
 #function test data starts here
-N=100
-r1 = 1
-c1 = np.array((0,0,0))
-r2 = 1
-c2 = np.array((0,1,1))
-r3 = 1
-c3 = np.array((3,2,0))
-r4 = 1
-c4 = np.array((3,3,2))
-r5 = 1
-c5 = np.array((0,4,1))
-r6 = 1
-c6 = np.array((1,4,1))
-r7 = 1
-c7 = np.array((5,4,1))
-r8 = 1
-c8 = np.array((2,2,5))
-r9 = 1
-c9 = np.array((4,1,4))
-r10 = 1
-c10 = np.array((2,1,1))
+#N=100000
+#r1 = 1
+#c1 = np.array((0,0,0))
+#r2 = 1
+#c2 = np.array((0,1,1))
+#r3 = 1
+#c3 = np.array((3,2,0))
+#r4 = 1
+#c4 = np.array((3,3,2))
+#r5 = 1
+#c5 = np.array((0,4,1))
+#r6 = 1
+#c6 = np.array((1,4,1))
+#r7 = 1
+#c7 = np.array((5,4,1))
+#r8 = 1
+#c8 = np.array((2,2,5))
+#r9 = 1
+#c9 = np.array((4,1,4))
+#r10 = 1
+#c10 = np.array((2,1,1))
 
-ballArray=np.array(([c1,r1],[c2,r2],[c3,r3],[c4,r4],[c5,r5],[c6,r6],[c6,r6],[c7,r7],[c8,r8],[c9,r9]),dtype=object)
-sampleBall1 = rejection_sampling(3,r1,c1,N)
-sampleBall2 = rejection_sampling(3,r2,c2,N)
-sampleBall3 = rejection_sampling(3,r3,c3,N)
-sampleBall4 = rejection_sampling(3,r4,c4,N)
-sampleBall5 = rejection_sampling(3,r5,c5,N)
-sampleBall6 = rejection_sampling(3,r6,c6,N)
-sampleBall7 = rejection_sampling(3,r7,c7,N)
-sampleBall8 = rejection_sampling(3,r8,c8,N)
-sampleBall9 = rejection_sampling(3,r9,c9,N)
 
-sampleArray = [sampleBall1,sampleBall2,sampleBall3,sampleBall4,sampleBall5,sampleBall6,sampleBall7,sampleBall8,sampleBall9]
+#ballArray=[[c1,r1],[c2,r2],[c3,r3],[c4,r4],[c5,r5],[c6,r6],[c6,r6],[c7,r7],[c8,r8],[c9,r9]]
+#sampleBall1 = rejection_sampling(3,r1,c1,N)
+#sampleBall2 = rejection_sampling(3,r2,c2,N)
+#sampleBall3 = rejection_sampling(3,r3,c3,N)
+#sampleBall4 = rejection_sampling(3,r4,c4,N)
+#sampleBall5 = rejection_sampling(3,r5,c5,N)
+#sampleBall6 = rejection_sampling(3,r6,c6,N)
+#sampleBall7 = rejection_sampling(3,r7,c7,N)
+#sampleBall8 = rejection_sampling(3,r8,c8,N)
+#sampleBall9 = rejection_sampling(3,r9,c9,N)
 
+#sampleArray = [sampleBall1,sampleBall2,sampleBall3,sampleBall4,sampleBall5,sampleBall6,sampleBall7,sampleBall8,sampleBall9]
+print('EndSampling')
 #function test data ends here
 
 def angle(vec1, vec2, acute=True):
@@ -77,6 +87,7 @@ def computeStabber(sampleArray):
         
     listZip = [0]*len(sampleArray)
 
+    print('StartOptimizing')
     res = optimize.dual_annealing(f, bounds=list(zip(listZip,[len(x)-0.001 for x in samples])))
 
     xf = res['x']
@@ -170,9 +181,9 @@ def pruneSamples(balls,samples):
                     r1 = balls[i][1]
                     c2 = balls[k][0]
                     r2 = balls[k][1]
-                    
+                    print('before Pruning sample inside Ball',j)
                     samples[j] = np.array([p for p in samples[j] if checkContainment(c1, r1, c2, r2, p)])
-                    #samples[j]=np.array(points)
+                    print('after sample inside Ball',j)
                     
     return samples
 
@@ -188,9 +199,9 @@ def isStabbable(balls, samples):
                     r1 = balls[i][1]
                     c2 = balls[k][0]
                     r2 = balls[k][1]
-                    #print('before pruning',len(samples[j]))
+                    print('before Containmentcheck sample inside Ball',j)
                     points = [p for p in samples[j] if checkContainment(c1, r1, c2, r2, p)]
-                    #print('after pruning',len(points))
+                    print('after Containmentcheck sample inside Ball',j)
                     if len(points) == 0:
                         return False
         return True
@@ -199,16 +210,21 @@ def twoApproximation(balls, samples):#see guibas
     start = 0;
     end=0;
     while end < len(balls):
+        print('StartTesting')
         if isStabbable(balls[start:end:1], samples[start:end:1]):
+            print('EndTesting')
             end+=1
         else:
+            print('EndTesting')
+            print('StartPruning')
             samples[start:end-1:1] = pruneSamples(balls[start:end-1:1], samples[start:end-1:1])
+            print('EndPruning')
             start = end
     return computeStabber(samples),samples
         
 #curve = computeStabber(sampleArray)
 
-curve,sampleArray = twoApproximation(ballArray,sampleArray)
+curve,sampleArray = twoApproximation(balls,samples)
 #print(curve)
 
 
