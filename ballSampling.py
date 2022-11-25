@@ -22,7 +22,7 @@ def rejection_sampling(dim, radius, center, N):
         while True:
             p = np.random.rand(dim) * 2 - 1
         
-            if np.linalg.norm(p) < 1:
+            if np.linalg.norm(p) <= 1:
                 break
         p *= radius
         p+=center
