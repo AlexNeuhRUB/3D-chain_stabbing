@@ -73,7 +73,7 @@ def f(x):#muss den max Winkel berechnen
     vectors=[]
     tmp=[]
     for i in range(len(y)):
-        curve.append(sampleArray[i][y[i]])
+        curve.append(samples[i][y[i]])
     for i in range(len(y)-1):
         vectors.append(curve[i+1]-curve[i])
     for i in range(len(vectors)-1):
@@ -199,27 +199,51 @@ def isStabbable(balls, samples):
                     r1 = balls[i][1]
                     c2 = balls[k][0]
                     r2 = balls[k][1]
-                    print('before Containmentcheck sample inside Ball',j)
+                    #print('before Containmentcheck sample inside Ball',j)
                     points = [p for p in samples[j] if checkContainment(c1, r1, c2, r2, p)]
-                    print('after Containmentcheck sample inside Ball',j)
+                    #print('after Containmentcheck sample inside Ball',j)
                     if len(points) == 0:
                         return False
+        return True
+    
+def isStabbableTrue(balls, samples):
+    n = len(balls)
+    if n<3:
+        return True
+    else:
+        for j in range(1,n):
+            for i in range(j):
+                c1 = balls[i][0]
+                r1 = balls[i][1]
+                c2 = balls[n-1][0]
+                r2 = balls[n-1][1]
+                #print('before Containmentcheck sample inside Ball',j)
+                points = [p for p in samples[j] if checkContainment(c1, r1, c2, r2, p)]
+                #print('after Containmentcheck sample inside Ball',j)
+                if len(points) == 0:
+                    return False
         return True
     
 def twoApproximation(balls, samples):#see guibas
     start = 0;
     end=0;
+    lastTestPassed = True
+    print('StartTesting')
     while end < len(balls):
-        print('StartTesting')
-        if isStabbable(balls[start:end:1], samples[start:end:1]):
-            print('EndTesting')
+        
+        if lastTestPassed:
+            #print('EndTesting')
             end+=1
+            print(end)
+            lastTestPassed = isStabbableTrue(balls[start:end:1], samples[start:end:1])
         else:
-            print('EndTesting')
+            #print('EndTesting')
             print('StartPruning')
             samples[start:end-1:1] = pruneSamples(balls[start:end-1:1], samples[start:end-1:1])
             print('EndPruning')
             start = end
+            lastTestPassed=True
+    print('EndTesting') 
     return computeStabber(samples),samples
         
 #curve = computeStabber(sampleArray)
@@ -250,12 +274,11 @@ curve,sampleArray = twoApproximation(balls,samples)
 #ax.plot()
 #plt.show()
 #plot starts here
-fig, ax = plt.subplots(1, 1, subplot_kw={'projection':'3d', 'aspect':'auto'})
+fig, ax = plt.subplots(1, 1, subplot_kw={'projection':'3d'})
 xs=[]
 ys=[]
 zs=[]
 for i in range(len(sampleArray)):
-    print(len(sampleArray[i]))
     for j in range(len(sampleArray[i])):
         xs.append(sampleArray[i][j][0])
         ys.append(sampleArray[i][j][1])
