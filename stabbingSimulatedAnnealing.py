@@ -17,9 +17,12 @@ track=oneTrack()
 balls=[]
 samples=[]
 print('StartSampling')
-for i in range(len(track)):
-    balls.append([track[i],1])
-    samples.append(rejection_sampling(3,1,track[i],30))
+
+for i in range(30):
+    balls.append([track[i],.001])
+    samples.append(rejection_sampling(3,.001,track[i],30))
+print(track[1])
+print(samples[1])
 #function test data starts here
 #N=100000
 #r1 = 1
@@ -59,12 +62,9 @@ for i in range(len(track)):
 print('EndSampling')
 #function test data ends here
 
-def angle(vec1, vec2, acute=True):
-    angle = np.arccos(np.dot(vec1, vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2)))
-    if (acute == True):
-        return angle
-    else:
-        return 2 * np.pi - angle
+def angle(vec1, vec2):
+    angle = np.arccos(np.dot(vec1 / (np.linalg.norm(vec1)), (vec2/np.linalg.norm(vec2))))
+    return angle
 
 def f(x):#muss den max Winkel berechnen
     y = [int(xs) for xs in x]
@@ -78,6 +78,7 @@ def f(x):#muss den max Winkel berechnen
         vectors.append(curve[i+1]-curve[i])
     for i in range(len(vectors)-1):
         tmp.append(-angle(vectors[i],vectors[i+1]))
+    #print(tmp)
     return min(tmp)
 
 def computeStabber(sampleArray):
@@ -278,12 +279,20 @@ fig, ax = plt.subplots(1, 1, subplot_kw={'projection':'3d'})
 xs=[]
 ys=[]
 zs=[]
-for i in range(len(sampleArray)):
-    for j in range(len(sampleArray[i])):
-        xs.append(sampleArray[i][j][0])
-        ys.append(sampleArray[i][j][1])
-        zs.append(sampleArray[i][j][2])
+xxs=[]
+yys=[]
+zzs=[]
+for i in range(30):
+    for j in range(len(samples[i])):
+        xs.append(samples[i][j][0])
+        ys.append(samples[i][j][1])
+        zs.append(samples[i][j][2])
         
 for i in range(len(sampleArray)):
     ax.scatter(xs,ys,zs, s=10, c='r', zorder=10)
-ax.plot(curve[:,0], curve[:,1], curve[:,2], color = 'black')
+for i in range(len(samples[i])):
+        xxs.append(track[i][0])
+        yys.append(track[i][1])
+        zzs.append(track[i][2])
+ax.plot(xxs,yys,zzs, color = 'blue')
+#ax.plot(curve[:,0], curve[:,1], curve[:,2], color = 'black')
