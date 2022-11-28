@@ -38,13 +38,16 @@ def f(x, *args):
         vectors.append(curve[i+1] - curve[i])
     for i in range(len(vectors)-1):
         angles.append(-angle(vectors[i],vectors[i+1]))
-    #print(len(curve), len(vectors), len(angles))
     return max(angles)
 
 def computeStabber(samples, start, end):
-    #print("compute stabber", start, end)
-    lb = [0 for i in range(start, end)]
-    ub = [len(samples[i])-0.001 for i in range(start, end)]
+    lb = list()
+    ub = list()
+    for i in range(start, end):
+        lb.append(0)
+        ub.append(len(samples[i])-0.001)
+
+    print(ub)
 
     res = optimize.dual_annealing(f, args=(samples, start, end), bounds=list(zip(lb,ub)))
 
@@ -134,7 +137,6 @@ def pruneSamples(balls, samples, start, end):
                 c2 = balls[k][0]
                 r2 = balls[k][1]
                 samples[j] = np.array([p for p in samples[j] if checkContainment(c1, r1, c2, r2, p)])
-    return samples
 
 def isStabbable(balls, samples, start, end):
     for j in range(start+1, end):
@@ -174,13 +176,20 @@ def stabbing_path(balls, n_samples):
         if stabbable:
             end += 1
             stabbable = isStabbableTrue(balls, samples, start, end)
-            #print(start, end, stabbable)
+            print(start, end, stabbable)
         else:
-            samples = pruneSamples(balls, samples, start, end-1)
+            pruneSamples(balls, samples, start, end-1)
+            for i in range(len(balls)):
+                print(len(samples[i]))
             segments.append(computeStabber(samples, start, end-1))
             start = end - 1
             stabbable = True
-    samples = pruneSamples(balls, samples, start, end)
-    segments.append(computeStabber(samples, start, end))
+    if not stabbable:
+        pruneSamples(balls, samples, start, end-1)
+        segments.append(computeStabber(samples, start, end-1))
+        segments.append(np.array([samples[-1][0]]))
+    else:
+        pruneSamples(balls, samples, start, end)
+        segments.append(computeStabber(samples, start, end))
     #print('EndTesting')
     return np.concatenate(segments), samples
