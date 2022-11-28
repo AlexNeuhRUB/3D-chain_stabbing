@@ -12,6 +12,8 @@ from ballSampling import rejection_sampling
 
 def unit_vector(vector):
     """ Returns the unit vector of the vector.  """
+    if np.linalg.norm(vector) == 0:
+        return vector
     return vector / np.linalg.norm(vector)
 
 def angle(v1, v2):
@@ -19,35 +21,38 @@ def angle(v1, v2):
     v2_u = unit_vector(v2)
     return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
 
-
 def f(x, *args):
     if len(x) < 3:
         return -np.pi
     samples = args[0]
+    start = args[1]
+    end =  args[2]
     y = [int(xs) for xs in x]
     curve = list()
     vectors = list()
-    tmp = list()
-    for i in range(len(y)):
-        curve.append(samples[i][y[i]])
-    for i in range(len(y)-1):
-        vectors.append(curve[i+1]-curve[i])
+    angles = list()
+    for i in range(start, end):
+        curve.append(samples[i][y[i-start]])
+    for i in range(len(curve)-1):
+        vectors.append(curve[i+1] - curve[i])
     for i in range(len(vectors)-1):
-        tmp.append(-angle(vectors[i],vectors[i+1]))
-    return min(tmp)
+        angles.append(-angle(vectors[i],vectors[i+1]))
+    print(len(curve), len(vectors), len(angles))
+    return max(angles)
 
 def computeStabber(samples, start, end):
-    print(start,end)
-    n = (end - start)+1
+    print("compute stabber", start, end)
+    lb = [0 for i in range(start, end)]
+    ub = [len(samples[i])-0.001 for i in range(start, end)]
 
-    listZip = [0] * (n)
-    res = optimize.dual_annealing(f, args=(samples,), bounds=list(zip(listZip,[len(samples[i])-0.001 for i in range(start, end+1)])))
+    res = optimize.dual_annealing(f, args=(samples, start, end), bounds=list(zip(lb,ub)))
 
-    xf = res['x']
-    curveList = []
-    for i in range(start, end+1):
-        curveList.append(samples[i][int(xf[i-start])])
-    return(np.array(curveList))
+    xf = res.x
+    print(res.fun)
+    curve = list()
+    for i in range(start, end):
+        curve.append(samples[i][int(xf[i-start])])
+    return(np.array(curve))
 
 def outerTangents(r1, c1, r2, c2):
     angle1 = math.atan2(c2[1] - c1[1], c2[0] - c1[0])
@@ -71,12 +76,8 @@ def outerTangents(r1, c1, r2, c2):
 def convertCoordinates(p1, p2, p3):
     """p1 should be center of ball 1, since we project it on 0,0 and p2 to be on x axis"""
 
-    u = p2 - p1
-    v = p3 - p1
-
-    u = u / np.linalg.norm(u)
-    v = v / np.linalg.norm(v)
-
+    u = unit_vector(p2 - p1)
+    v = unit_vector(p3 - p1)
 
     #project p1 to [0,0], hence move p2,p3 accordingly
     p2_x = np.dot(u, p2 - p1)
@@ -124,53 +125,40 @@ def checkContainment(c1, r1, c2, r2, p):
         return False
 
 def pruneSamples(balls, samples, start, end):
-    n = end - start
-    if n < 3:
-        return samples
-    else:
-        for j in range(start + 1, end-1):
-            for i in range(start, j):
-                for k in range(j+1, end):
-                    c1 = balls[i][0]
-                    r1 = balls[i][1]
-                    c2 = balls[k][0]
-                    r2 = balls[k][1]
-                    samples[j] = np.array([p for p in samples[j] if checkContainment(c1, r1, c2, r2, p)])
-
+    for j in range(start + 1, end-1):
+        for i in range(start, j):
+            for k in range(j+1, end):
+                c1 = balls[i][0]
+                r1 = balls[i][1]
+                c2 = balls[k][0]
+                r2 = balls[k][1]
+                samples[j] = np.array([p for p in samples[j] if checkContainment(c1, r1, c2, r2, p)])
     return samples
 
 def isStabbable(balls, samples, start, end):
-    n = end - start
-    if n < 3:
-        return True
-    else:
-        for j in range(start+1, end):
-            for i in range(start, j):
-                for k in range(j+1, end):
-                    c1 = balls[i][0]
-                    r1 = balls[i][1]
-                    c2 = balls[k][0]
-                    r2 = balls[k][1]
-                    points = [p for p in samples[j] if checkContainment(c1, r1, c2, r2, p)]
-                    if len(points) == 0:
-                        return False
-        return True
-
-def isStabbableTrue(balls, samples, start, end):
-    n = (end - start) +1
-    if n < 3:
-        return True
-    else:
-        for j in range(start + 1, end):
-            for i in range(start, j):
+    for j in range(start+1, end):
+        for i in range(start, j):
+            for k in range(j+1, end):
                 c1 = balls[i][0]
                 r1 = balls[i][1]
-                c2 = balls[end][0]
-                r2 = balls[end][1]
+                c2 = balls[k][0]
+                r2 = balls[k][1]
                 points = [p for p in samples[j] if checkContainment(c1, r1, c2, r2, p)]
                 if len(points) == 0:
                     return False
-        return True
+    return True
+
+def isStabbableTrue(balls, samples, start, end):
+    for j in range(start + 1, end):
+        for i in range(start, j):
+            c1 = balls[i][0]
+            r1 = balls[i][1]
+            c2 = balls[end-1][0]
+            r2 = balls[end-1][1]
+            points = [p for p in samples[j] if checkContainment(c1, r1, c2, r2, p)]
+            if len(points) == 0:
+                return False
+    return True
 
 def stabbing_path(balls, n_samples):
     samples = list()
@@ -183,22 +171,15 @@ def stabbing_path(balls, n_samples):
     stabbable = True
     while end < len(balls):
         if stabbable:
+            end += 1
+            stabbable = isStabbableTrue(balls, samples, start, end)
             print(start, end, stabbable)
-            if(end == len(balls)-1):
-                print('last segment')
-                segments.append(computeStabber(samples, start, end))
-                break
-            else:
-                end += 1
-                stabbable = isStabbableTrue(balls, samples, start, end)
         else:
-            print(start, end, stabbable)
             samples = pruneSamples(balls, samples, start, end-1)
             segments.append(computeStabber(samples, start, end-1))
-            print('segments:',segments)
-            start = end         
+            start = end - 1
             stabbable = True
-    if not stabbable:
-        samples = pruneSamples(balls, samples, start, end-1)
+    samples = pruneSamples(balls, samples, start, end)
+    segments.append(computeStabber(samples, start, end))
     #print('EndTesting')
     return np.concatenate(segments), samples
