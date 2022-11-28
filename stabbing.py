@@ -19,7 +19,8 @@ def unit_vector(vector):
 def angle(v1, v2):
     v1_u = unit_vector(v1)
     v2_u = unit_vector(v2)
-    return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
+
+    return np.pi - np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
 
 def f(x, *args):
     if len(x) < 3:
@@ -37,10 +38,11 @@ def f(x, *args):
         vectors.append(curve[i+1] - curve[i])
     for i in range(len(vectors)-1):
         angles.append(-angle(vectors[i],vectors[i+1]))
+    #print(len(curve), len(vectors), len(angles))
     return max(angles)
 
 def computeStabber(samples, start, end):
-    print("compute stabber", start, end)
+    #print("compute stabber", start, end)
     lb = [0 for i in range(start, end)]
     ub = [len(samples[i])-0.001 for i in range(start, end)]
 
@@ -172,7 +174,7 @@ def stabbing_path(balls, n_samples):
         if stabbable:
             end += 1
             stabbable = isStabbableTrue(balls, samples, start, end)
-            print(start, end, stabbable)
+            #print(start, end, stabbable)
         else:
             samples = pruneSamples(balls, samples, start, end-1)
             segments.append(computeStabber(samples, start, end-1))
