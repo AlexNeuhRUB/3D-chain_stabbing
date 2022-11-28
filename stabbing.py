@@ -51,7 +51,7 @@ def computeStabber(samples, start, end):
 
 def outerTangents(r1, c1, r2, c2):
     angle1 = math.atan2(c2[1] - c1[1], c2[0] - c1[0])
-    angle2 = math.acos((r1-r2) / np.linalg.norm(c1 - c2))
+    angle2 = math.acos((r1 - r2) / np.linalg.norm(c1 - c2))
 
     t1StartX = c1[0] + math.cos(angle1 + angle2) * r1
     t1StartY = c1[1] + math.sin(angle1 + angle2) * r1
@@ -66,7 +66,7 @@ def outerTangents(r1, c1, r2, c2):
 
     t1 = [[t1StartX, t1StartY], [t1EndX, t1EndY]]
     t2 = [[t2StartX, t2StartY], [t2EndX, t2EndY]]
-    return t1,t2
+    return t1, t2
 
 def convertCoordinates(p1, p2, p3):
     """p1 should be center of ball 1, since we project it on 0,0 and p2 to be on x axis"""
@@ -101,20 +101,20 @@ def swapIfBigger(r1, c1, r2, c2):
     return c1, r1, c2, r2
 
 def checkContainment(c1, r1, c2, r2, p):
-    p1,p2,p3 = convertCoordinates(c1, c2, p)
-    t1,t2 = outerTangents(r1, p1, r2, p2)
+    p1, p2, p3 = convertCoordinates(c1, c2, p)
+    t1, t2 = outerTangents(r1, p1, r2, p2)
     t1A = t1[0]
     t1B = t1[1]
     t2A = t2[0]
     t2B = t2[1]
 
-    if((np.linalg.norm(p-c1) <= r1) or (np.linalg.norm(p-c2) <= r2)):
+    if((np.linalg.norm(p - c1) <= r1) or (np.linalg.norm(p - c2) <= r2)):
         return True
     else:
         sign1 = (p[0] - t1A[0]) * (t1B[1] - t1A[1]) - (p[1] - t1A[1]) * (t1B[0] - t1A[0])
         sign2 = (p[0] - t2A[0]) * (t2B[1] - t2A[1]) - (p[1] - t2A[1]) * (t2B[0] - t2A[0])
         if((sign1 >= 0 and sign2 <=0)
-           and (np.linalg.norm(np.array((p[0],0)) - p1) <= np.linalg.norm(p1 - p2))
+           and (np.linalg.norm(np.array((p[0], 0)) - p1) <= np.linalg.norm(p1 - p2))
            and (np.linalg.norm(np.array((p[0], 0)) - p2) <= np.linalg.norm(p1 - p2))):
             return True
         return False
