@@ -91,11 +91,11 @@ def convertCoordinates(p1, p2, p3):
 
 def checkContainment(c1, r1, c2, r2, p):
     #check collinearity
-    if (c1[1] - c2[1]) * (c1[0] - p[0]) == (c1[1] - p[1]) * (c1[0] - c2[0]):
-        if((np.linalg.norm(p - c1) <= np.linalg.norm(c1 - c2))
-           and (np.linalg.norm(p - c2) <= np.linalg.norm(c1 - c2))):
-            return True
-        return False
+    #if (c1[1] - c2[1]) * (c1[0] - p[0]) == (c1[1] - p[1]) * (c1[0] - c2[0]):
+    #    if((np.linalg.norm(p - c1) <= np.linalg.norm(c1 - c2))
+    #       and (np.linalg.norm(p - c2) <= np.linalg.norm(c1 - c2))):
+    #        return True
+    #    return False
     p1, p2, p3 = convertCoordinates(c1, c2, p)
     t1, t2 = outerTangents(r1, p1, r2, p2)
     t1A = t1[0]
@@ -120,8 +120,8 @@ def isStabbableLoop(balls, old_samples, new_samples, start, end):
         for i in range(start, j):
             c1 = balls[i][0]
             r1 = balls[i][1]
-            c2 = balls[end-1][0]
-            r2 = balls[end-1][1]
+            c2 = balls[end][0]
+            r2 = balls[end][1]
             points = [p for p in old_samples[j] if checkContainment(c1, r1, c2, r2, p)]
             new_samples[j] = np.array(points)
             if len(points) == 0:
@@ -139,19 +139,19 @@ def stabbing_path(balls, n_samples):
     end = 0;
     stabbable = True
     while end < len(balls):
-        if stabbable:
-            end += 1
+        if stabbable:            
             old_samples = new_samples.copy()
             stabbable = isStabbableLoop(balls, old_samples, new_samples, start, end)
             print(start, end, stabbable)
+            end += 1
         else:
-            segments.append(computeStabber(old_samples, start, end-1))
+            segments.append(computeStabber(old_samples, start, end))
             new_samples = old_samples
-            start = end - 1
+            start = end
             stabbable = True
     if not stabbable:
-        segments.append(computeStabber(old_samples, start, end-1))
-        segments.append(np.array([samples[-1][0]]))
+        segments.append(computeStabber(old_samples, start, end))
+       # segments.append(np.array([samples[-1][0]]))
     else:
         segments.append(computeStabber(old_samples, start, end))
     #print('EndTesting')
