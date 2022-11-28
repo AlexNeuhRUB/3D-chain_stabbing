@@ -93,8 +93,8 @@ def convertCoordinates(p1, p2, p3):
 def checkContainment(c1, r1, c2, r2, p):
     #check collinearity
     if (c1[1] - c2[1]) * (c1[0] - p[0]) == (c1[1] - p[1]) * (c1[0] - c2[0]):
-        if((np.linalg.norm(np.array((p[0],p[1])) - c1) <= np.linalg.norm(c1 - c2))
-           and (np.linalg.norm(np.array((p[0],p[0])) - c2) <= np.linalg.norm(c1 - c2))):
+        if((np.linalg.norm(np.array((p[0], p[1])) - c1) <= np.linalg.norm(c1 - c2))
+           and (np.linalg.norm(np.array((p[0], p[1])) - c2) <= np.linalg.norm(c1 - c2))):
             return True
         return False
     p1, p2, p3 = convertCoordinates(c1, c2, p)
@@ -110,8 +110,8 @@ def checkContainment(c1, r1, c2, r2, p):
         sign1 = (p3[0] - t1A[0]) * (t1B[1] - t1A[1]) - (p3[1] - t1A[1]) * (t1B[0] - t1A[0])
         sign2 = (p3[0] - t2A[0]) * (t2B[1] - t2A[1]) - (p3[1] - t2A[1]) * (t2B[0] - t2A[0])
         if((sign1 >= 0 and sign2 <=0)
-           and (np.linalg.norm(np.array((p[0], 0)) - p1) <= np.linalg.norm(p1 - p2))
-           and (np.linalg.norm(np.array((p[0], 0)) - p2) <= np.linalg.norm(p1 - p2))):
+           and (np.linalg.norm(np.array((p3[0], 0)) - p1) <= np.linalg.norm(p1 - p2))
+           and (np.linalg.norm(np.array((p3[0], 0)) - p2) <= np.linalg.norm(p1 - p2))):
             return True
         return False
 
@@ -139,14 +139,12 @@ def pruneSamples(balls, samples, start, end):
     #return True
 
 def isStabbableTrue(balls, samples, start, end):
-    if (end-start)+1 <=3:
-        return True
     for j in range(start + 1, end):
         for i in range(start, j):
             c1 = balls[i][0]
             r1 = balls[i][1]
-            c2 = balls[end][0]
-            r2 = balls[end][1]
+            c2 = balls[end-1][0]
+            r2 = balls[end-1][1]
             points = [p for p in samples[j] if checkContainment(c1, r1, c2, r2, p)]
             if len(points) == 0:
                 print(j)

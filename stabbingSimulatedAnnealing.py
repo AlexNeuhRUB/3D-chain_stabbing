@@ -23,7 +23,7 @@ balls = []
 #print(track[1])
 
 r1 = .5
-c1 = np.array((0,4,1))
+c1 = np.array((0,0,0))
 r2 = .5
 c2 = np.array((1,0,0))
 r3 = .5
