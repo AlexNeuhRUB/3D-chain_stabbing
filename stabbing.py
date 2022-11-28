@@ -3,9 +3,22 @@ import math
 from scipy import optimize
 from ballSampling import rejection_sampling
 
-def angle(vec1, vec2):
-    angle = np.arccos(np.dot(vec1 / (np.linalg.norm(vec1)), (vec2/np.linalg.norm(vec2))))
-    return angle
+#def angle(vec1, vec2):
+#    angle = np.arccos(np.dot((vec2/np.linalg.norm(vec2)),vec1 / (np.linalg.norm(vec1))))
+#    print('vec1',vec1)
+    #print angleDegrees, vertexType
+    
+#    return angle
+
+def unit_vector(vector):
+    """ Returns the unit vector of the vector.  """
+    return vector / np.linalg.norm(vector)
+
+def angle(v1, v2):
+    v1_u = unit_vector(v1)
+    v2_u = unit_vector(v2)
+    return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
+
 
 def f(x, *args):
     samples = args[0]
@@ -123,9 +136,12 @@ def pruneSamples(balls, samples):
                     r1 = balls[i][1]
                     c2 = balls[k][0]
                     r2 = balls[k][1]
-                    #print('before Pruning sample inside Ball',j)
-                    samples[j] = np.array([p for p in samples[j] if checkContainment(c1, r1, c2, r2, p)])
-                    #print('after sample inside Ball',j)
+                    print('before Pruning sample inside Ball',j)
+                    print('i',i)
+                    print('k',k)
+                    points = np.array([p for p in samples[j] if checkContainment(c1, r1, c2, r2, p)])
+                    samples[j] = points
+                    print('after sample inside Ball',j)
 
     return samples
 
@@ -141,9 +157,9 @@ def isStabbable(balls, samples):
                     r1 = balls[i][1]
                     c2 = balls[k][0]
                     r2 = balls[k][1]
-                    #print('before Containmentcheck sample inside Ball',j)
+                    print('before Containmentcheck sample inside Ball',j)
                     points = [p for p in samples[j] if checkContainment(c1, r1, c2, r2, p)]
-                    #print('after Containmentcheck sample inside Ball',j)
+                    print('after Containmentcheck sample inside Ball',j)
                     if len(points) == 0:
                         return False
         return True
@@ -172,21 +188,28 @@ def stabbing_path(balls, n_samples):
         samples.append(rejection_sampling(3, balls[i][1], balls[i][0], n_samples))
     start = 0;
     end = 0;
+    allStabbable= True
     stabbable = True
-    #print('StartTesting')
+    print('StartTesting')
     while end < len(balls):
         print(stabbable)
         if stabbable:
-            #print('EndTesting')
+            print('EndTesting')
             end += 1
             #print(end)
             stabbable = isStabbableTrue(balls[start:end:1], samples[start:end:1])
+            if end==len(balls)-1:
+                print('start',start)
+                print('end',end)
+                samples[start:end:1] = pruneSamples(balls[start:end:1], samples[start:end:1])
         else:
-            #print('EndTesting')
+            allStabbable = False
+            print('EndTesting')
             print('StartPruning')
             samples[start:end-1:1] = pruneSamples(balls[start:end-1:1], samples[start:end-1:1])
             print('EndPruning')
             start = end
             stabbable = True
-    #print('EndTesting')
+    print('EndTesting')
+    
     return computeStabber(samples), samples
