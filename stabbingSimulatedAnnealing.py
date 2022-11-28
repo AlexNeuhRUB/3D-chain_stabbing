@@ -13,7 +13,7 @@ from readData import oneTrack
 from stabbing import *
 
 
-n_samples = 500
+n_samples = 1000
 balls = []
 
 
@@ -26,23 +26,23 @@ balls = []
 r1 = .5
 c1 = np.array((0,0,0))
 r2 = .5
-c2 = np.array((1,.5,0))
+c2 = np.array((1,0,0))
 r3 = .5
-c3 = np.array((2,.5,0))
-r4 = 1
+c3 = np.array((2,0,0))
+r4 = .5
 c4 = np.array((3,0,0))
-r5 = 1
-c5 = np.array((0,4,1))
-r6 = 1
-c6 = np.array((1,4,1))
-r7 = 1
-c7 = np.array((5,4,1))
-r8 = 1
-c8 = np.array((2,2,5))
-r9 = 1
-c9 = np.array((4,1,4))
-r10 = 1
-c10 = np.array((2,1,1))
+r5 = .5
+c5 = np.array((4,0,0))
+r6 = .5
+c6 = np.array((5,0,0))
+r7 = .5
+c7 = np.array((6,0,0))
+r8 = .5
+c8 = np.array((7,0,0))
+r9 = .5
+c9 = np.array((8,0,0))
+r10 = .5
+c10 = np.array((9,0,0))
 
 
 balls = [[c1,r1],[c2,r2],[c3,r3],[c4,r4],[c5,r5],[c6,r6],[c6,r6],[c7,r7],[c8,r8],[c9,r9]]

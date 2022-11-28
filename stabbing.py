@@ -3,13 +3,6 @@ import math
 from scipy import optimize
 from ballSampling import rejection_sampling
 
-#def angle(vec1, vec2):
-#    angle = np.arccos(np.dot((vec2/np.linalg.norm(vec2)),vec1 / (np.linalg.norm(vec1))))
-#    print('vec1',vec1)
-    #print angleDegrees, vertexType
-    
-#    return angle
-
 def unit_vector(vector):
     """ Returns the unit vector of the vector.  """
     if np.linalg.norm(vector) == 0:
@@ -46,8 +39,6 @@ def computeStabber(samples, start, end):
     for i in range(start, end):
         lb.append(0)
         ub.append(len(samples[i])-0.001)
-
-    print(ub)
 
     res = optimize.dual_annealing(f, args=(samples, start, end), bounds=list(zip(lb,ub)))
 
@@ -179,8 +170,6 @@ def stabbing_path(balls, n_samples):
             print(start, end, stabbable)
         else:
             pruneSamples(balls, samples, start, end-1)
-            for i in range(len(balls)):
-                print(len(samples[i]))
             segments.append(computeStabber(samples, start, end-1))
             start = end - 1
             stabbable = True
