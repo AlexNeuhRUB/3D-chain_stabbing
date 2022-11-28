@@ -3,9 +3,22 @@ import math
 from scipy import optimize
 from ballSampling import rejection_sampling
 
-def angle(vec1, vec2):
-    angle = np.arccos(np.dot(vec1 / (np.linalg.norm(vec1)), (vec2/np.linalg.norm(vec2))))
-    return angle
+#def angle(vec1, vec2):
+#    angle = np.arccos(np.dot((vec2/np.linalg.norm(vec2)),vec1 / (np.linalg.norm(vec1))))
+#    print('vec1',vec1)
+    #print angleDegrees, vertexType
+    
+#    return angle
+
+def unit_vector(vector):
+    """ Returns the unit vector of the vector.  """
+    return vector / np.linalg.norm(vector)
+
+def angle(v1, v2):
+    v1_u = unit_vector(v1)
+    v2_u = unit_vector(v2)
+    return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
+
 
 def f(x, *args):
     if len(x) < 3:
@@ -167,6 +180,7 @@ def stabbing_path(balls, n_samples):
         samples.append(rejection_sampling(3, balls[i][1], balls[i][0], n_samples))
     start = 0;
     end = 0;
+    allStabbable= True
     stabbable = True
     while end < len(balls):
         if stabbable:

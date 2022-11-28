@@ -78,7 +78,6 @@ for i in range(len(balls)):
 #t2xs=[t2[0][0],t2[1][0]]
 #t2ys=[t2[0][1],t2[1][1]]
 #ax.plot(t2xs,t2ys, color='black')
-
 for i in range(len(sampleArray)):
     ax.scatter(sampleArray[i][:,0], sampleArray[i][:,1])
 ax.plot(curve[:,0], curve[:,1], color = 'black')
