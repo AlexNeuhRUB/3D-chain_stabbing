@@ -12,7 +12,7 @@ from readData import oneTrack
 from stabbing import *
 
 
-n_samples = 50
+n_samples = 5000
 balls = []
 
 
@@ -23,7 +23,7 @@ balls = []
 #print(track[1])
 
 r1 = .5
-c1 = np.array((0,0,1))
+c1 = np.array((0,4,1))
 r2 = .5
 c2 = np.array((1,0,1))
 r3 = .5
@@ -31,7 +31,7 @@ c3 = np.array((2,0,1))
 r4 = .5
 c4 = np.array((3,0,2))
 r5 = .5
-c5 = np.array((4,0,2))
+c5 = np.array((4,-4,2))
 r6 = .5
 c6 = np.array((5,0,2))
 r7 = .5
@@ -62,6 +62,8 @@ curve, sampleArray = stabbing_path(balls, n_samples)
 fig, ax = plt.subplots()
 #fig = plt.figure()
 #ax = Axes3D(fig)
+ax.set_xlim([0, 10])
+ax.set_ylim([-5, 5])
 
 c = list()
 
