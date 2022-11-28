@@ -65,9 +65,9 @@ fig, ax = plt.subplots()
 
 c = list()
 
-for i in range(len(balls)):
-    c.append(plt.Circle((balls[i][0][0],balls[i][0][1]), balls[i][1]))
-    ax.add_patch(c[i])
+#for i in range(len(balls)):
+#    c.append(plt.Circle((balls[i][0][0],balls[i][0][1]), balls[i][1]))
+#    ax.add_patch(c[i])
 
 #plt.xlim(-2, 5)
 #plt.ylim(-2, 5)
