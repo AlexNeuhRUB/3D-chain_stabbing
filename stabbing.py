@@ -146,7 +146,7 @@ def stabbing_path(balls, n_samples):
             end += 1
         else:
             segments.append(computeStabber(old_samples, start, end))
-            new_samples = old_samples
+            new_samples = old_samples.copy()
             start = end
             stabbable = True
     if not stabbable:
