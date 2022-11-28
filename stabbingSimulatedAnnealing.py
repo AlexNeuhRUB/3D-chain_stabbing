@@ -12,7 +12,7 @@ from readData import oneTrack
 from stabbing import *
 
 
-n_samples = 5000
+n_samples = 500
 balls = []
 
 

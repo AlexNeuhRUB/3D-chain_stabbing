@@ -43,7 +43,6 @@ def computeStabber(samples, start, end):
     res = optimize.dual_annealing(f, args=(samples, start, end), bounds=list(zip(lb,ub)))
     print(res)
     xf = res.x
-    print(res.fun)
     curve = list()
     for i in range(start, end):
         curve.append(samples[i][int(xf[i-start])])
@@ -93,8 +92,8 @@ def convertCoordinates(p1, p2, p3):
 def checkContainment(c1, r1, c2, r2, p):
     #check collinearity
     if (c1[1] - c2[1]) * (c1[0] - p[0]) == (c1[1] - p[1]) * (c1[0] - c2[0]):
-        if((np.linalg.norm(np.array((p[0], p[1])) - c1) <= np.linalg.norm(c1 - c2))
-           and (np.linalg.norm(np.array((p[0], p[1])) - c2) <= np.linalg.norm(c1 - c2))):
+        if((np.linalg.norm(p - c1) <= np.linalg.norm(c1 - c2))
+           and (np.linalg.norm(p - c2) <= np.linalg.norm(c1 - c2))):
             return True
         return False
     p1, p2, p3 = convertCoordinates(c1, c2, p)
@@ -115,67 +114,45 @@ def checkContainment(c1, r1, c2, r2, p):
             return True
         return False
 
-def pruneSamples(balls, samples, start, end):
-    for j in range(start + 1, end):
-        for i in range(start, j):
-            for k in range(j+1, end):
-                c1 = balls[i][0]
-                r1 = balls[i][1]
-                c2 = balls[k][0]
-                r2 = balls[k][1]
-                samples[j] = np.array([p for p in samples[j] if checkContainment(c1, r1, c2, r2, p)])
 
-#def isStabbable(balls, samples, start, end):
-#    for j in range(start+1, end):
-#        for i in range(start, j):
-#            for k in range(j+1, end):
- #               c1 = balls[i][0]
-  #              r1 = balls[i][1]
-   #             c2 = balls[k][0]
-    #            r2 = balls[k][1]
-     #           points = [p for p in samples[j] if checkContainment(c1, r1, c2, r2, p)]
-      #          if len(points) == 0:
-       #             return False
-    #return True
-
-def isStabbableTrue(balls, samples, start, end):
+def isStabbableLoop(balls, old_samples, new_samples, start, end):
     for j in range(start + 1, end):
         for i in range(start, j):
             c1 = balls[i][0]
             r1 = balls[i][1]
             c2 = balls[end-1][0]
             r2 = balls[end-1][1]
-            points = [p for p in samples[j] if checkContainment(c1, r1, c2, r2, p)]
+            points = [p for p in old_samples[j] if checkContainment(c1, r1, c2, r2, p)]
+            new_samples[j] = np.array(points)
             if len(points) == 0:
                 print(j)
                 return False
     return True
 
 def stabbing_path(balls, n_samples):
-    samples = list()
+    old_samples = list()
+    new_samples = list()
     segments = list()
     for i in range(len(balls)):
-        samples.append(rejection_sampling(3, balls[i][1], balls[i][0], n_samples))
+        new_samples.append(rejection_sampling(3, balls[i][1], balls[i][0], n_samples))
     start = 0;
     end = 0;
-    allStabbable= True
     stabbable = True
     while end < len(balls):
         if stabbable:
             end += 1
-            stabbable = isStabbableTrue(balls, samples, start, end)
+            old_samples = new_samples.copy()
+            stabbable = isStabbableLoop(balls, old_samples, new_samples, start, end)
             print(start, end, stabbable)
         else:
-            pruneSamples(balls, samples, start, end-1)
-            segments.append(computeStabber(samples, start, end-1))
+            segments.append(computeStabber(old_samples, start, end-1))
+            new_samples = old_samples
             start = end - 1
             stabbable = True
     if not stabbable:
-        pruneSamples(balls, samples, start, end-1)
-        segments.append(computeStabber(samples, start, end-1))
+        segments.append(computeStabber(old_samples, start, end-1))
         segments.append(np.array([samples[-1][0]]))
     else:
-        pruneSamples(balls, samples, start, end)
-        segments.append(computeStabber(samples, start, end))
+        segments.append(computeStabber(old_samples, start, end))
     #print('EndTesting')
-    return np.concatenate(segments), samples
+    return np.concatenate(segments), old_samples
