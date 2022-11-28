@@ -13,7 +13,7 @@ from readData import oneTrack
 from stabbing import stabbing_path
 
 
-n_samples = 50
+n_samples = 500
 balls = []
 
 
@@ -23,11 +23,11 @@ balls = []
 #    balls.append([track[i], 1])
 #print(track[1])
 
-r1 = 1
+r1 = .5
 c1 = np.array((0,0,0))
-r2 = 1
+r2 = .3
 c2 = np.array((1,1,0))
-r3 = 1
+r3 = .5
 c3 = np.array((2,0,0))
 #r4 = 1
 #c4 = np.array((3,3,2))
@@ -61,9 +61,9 @@ curve, sampleArray = stabbing_path(balls, n_samples)
 #t1,t2 = outerTangents(.5,c1,1.5,c2)
 
 
-c1 = plt.Circle((c1[0],c1[1]), 1, color = 'r')
-c2 = plt.Circle((c2[0],c2[1]), 1, color = 'b')
-c3 = plt.Circle((c3[0],c3[1]), 1, color = 'g')
+c1 = plt.Circle((c1[0],c1[1]), r1, color = 'r')
+c2 = plt.Circle((c2[0],c2[1]), r2, color = 'b')
+c3 = plt.Circle((c3[0],c3[1]), r3, color = 'g')
 
 fig, ax = plt.subplots()
 #plt.xlim(-2, 5)
@@ -80,6 +80,7 @@ ax.add_patch(c2)
 ax.add_patch(c3)
 for i in range(len(sampleArray)):
     ax.scatter(sampleArray[i][:,0], sampleArray[i][:,1])
+ax.plot(curve[:,0], curve[:,1], color = 'black')
 #ax.set_aspect('equal', adjustable='datalim')
 ax.plot()
 plt.show()
@@ -109,4 +110,4 @@ plt.show()
 #        yys.append(track[i][1])
 #        zzs.append(track[i][2])
 #ax.plot(xxs,yys,zzs, color = 'blue')
-#ax.plot(curve[:,0], curve[:,1], curve[:,2], color = 'black')
+ax.plot(curve[:,0], curve[:,1], color = 'black')
