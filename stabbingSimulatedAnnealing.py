@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Nov 17 14:37:15 2022
-
 @author: Alex
 """
 
@@ -24,7 +23,7 @@ balls = []
 #print(track[1])
 
 r1 = .5
-c1 = np.array((0,0,0))
+c1 = np.array((0,4,1))
 r2 = .5
 c2 = np.array((1,0,0))
 r3 = .5
@@ -82,6 +81,7 @@ for i in range(len(balls)):
 for i in range(len(sampleArray)):
     ax.scatter(sampleArray[i][:,0], sampleArray[i][:,1])
 ax.plot(curve[:,0], curve[:,1], color = 'black')
+
 plt.show()
 #ax.set_aspect('equal', adjustable='datalim')
 

@@ -13,7 +13,7 @@ def angle(v1, v2):
     v1_u = unit_vector(v1)
     v2_u = unit_vector(v2)
 
-    return np.pi - np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
+    return np.pi - abs(np.arccos(np.dot(v1_u, v2_u)))
 
 def f(x, *args):
     if len(x) < 3:
@@ -41,7 +41,7 @@ def computeStabber(samples, start, end):
         ub.append(len(samples[i])-0.001)
 
     res = optimize.dual_annealing(f, args=(samples, start, end), bounds=list(zip(lb,ub)))
-
+    print(res)
     xf = res.x
     print(res.fun)
     curve = list()
@@ -90,17 +90,13 @@ def convertCoordinates(p1, p2, p3):
 
     return np.array((0,0)), np.array((round(p2_xx,4),round(p2_yy,4))), np.array((round(p3_xx,4), round(p3_yy,4)))
 
-def swapIfBigger(r1, c1, r2, c2):
-    if(r1 < r2):
-        rTmp = r2
-        cTmp = c2
-        r2 = r1
-        c2 = c1
-        r1 = rTmp
-        c1 = cTmp
-    return c1, r1, c2, r2
-
 def checkContainment(c1, r1, c2, r2, p):
+    #check collinearity
+    if (c1[1] - c2[1]) * (c1[0] - p[0]) == (c1[1] - p[1]) * (c1[0] - c2[0]):
+        if((np.linalg.norm(np.array((p[0],p[1])) - c1) <= np.linalg.norm(c1 - c2))
+           and (np.linalg.norm(np.array((p[0],p[0])) - c2) <= np.linalg.norm(c1 - c2))):
+            return True
+        return False
     p1, p2, p3 = convertCoordinates(c1, c2, p)
     t1, t2 = outerTangents(r1, p1, r2, p2)
     t1A = t1[0]
@@ -111,8 +107,8 @@ def checkContainment(c1, r1, c2, r2, p):
     if((np.linalg.norm(p - c1) <= r1) or (np.linalg.norm(p - c2) <= r2)):
         return True
     else:
-        sign1 = (p[0] - t1A[0]) * (t1B[1] - t1A[1]) - (p[1] - t1A[1]) * (t1B[0] - t1A[0])
-        sign2 = (p[0] - t2A[0]) * (t2B[1] - t2A[1]) - (p[1] - t2A[1]) * (t2B[0] - t2A[0])
+        sign1 = (p3[0] - t1A[0]) * (t1B[1] - t1A[1]) - (p3[1] - t1A[1]) * (t1B[0] - t1A[0])
+        sign2 = (p3[0] - t2A[0]) * (t2B[1] - t2A[1]) - (p3[1] - t2A[1]) * (t2B[0] - t2A[0])
         if((sign1 >= 0 and sign2 <=0)
            and (np.linalg.norm(np.array((p[0], 0)) - p1) <= np.linalg.norm(p1 - p2))
            and (np.linalg.norm(np.array((p[0], 0)) - p2) <= np.linalg.norm(p1 - p2))):
@@ -120,7 +116,7 @@ def checkContainment(c1, r1, c2, r2, p):
         return False
 
 def pruneSamples(balls, samples, start, end):
-    for j in range(start + 1, end-1):
+    for j in range(start + 1, end):
         for i in range(start, j):
             for k in range(j+1, end):
                 c1 = balls[i][0]
@@ -129,28 +125,31 @@ def pruneSamples(balls, samples, start, end):
                 r2 = balls[k][1]
                 samples[j] = np.array([p for p in samples[j] if checkContainment(c1, r1, c2, r2, p)])
 
-def isStabbable(balls, samples, start, end):
-    for j in range(start+1, end):
-        for i in range(start, j):
-            for k in range(j+1, end):
-                c1 = balls[i][0]
-                r1 = balls[i][1]
-                c2 = balls[k][0]
-                r2 = balls[k][1]
-                points = [p for p in samples[j] if checkContainment(c1, r1, c2, r2, p)]
-                if len(points) == 0:
-                    return False
-    return True
+#def isStabbable(balls, samples, start, end):
+#    for j in range(start+1, end):
+#        for i in range(start, j):
+#            for k in range(j+1, end):
+ #               c1 = balls[i][0]
+  #              r1 = balls[i][1]
+   #             c2 = balls[k][0]
+    #            r2 = balls[k][1]
+     #           points = [p for p in samples[j] if checkContainment(c1, r1, c2, r2, p)]
+      #          if len(points) == 0:
+       #             return False
+    #return True
 
 def isStabbableTrue(balls, samples, start, end):
+    if (end-start)+1 <=3:
+        return True
     for j in range(start + 1, end):
         for i in range(start, j):
             c1 = balls[i][0]
             r1 = balls[i][1]
-            c2 = balls[end-1][0]
-            r2 = balls[end-1][1]
+            c2 = balls[end][0]
+            r2 = balls[end][1]
             points = [p for p in samples[j] if checkContainment(c1, r1, c2, r2, p)]
             if len(points) == 0:
+                print(j)
                 return False
     return True
 
