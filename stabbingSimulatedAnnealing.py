@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 from readData import oneTrack
-from stabbing import stabbing_path
+from stabbing import *
 
 
 n_samples = 500
@@ -25,12 +25,12 @@ balls = []
 
 r1 = .5
 c1 = np.array((0,0,0))
-r2 = .3
+r2 = .5
 c2 = np.array((1,1,0))
 r3 = .5
 c3 = np.array((2,0,0))
-#r4 = 1
-#c4 = np.array((3,3,2))
+r4 = 1
+c4 = np.array((3,0,0))
 #r5 = 1
 #c5 = np.array((0,4,1))
 #r6 = 1
@@ -45,7 +45,7 @@ c3 = np.array((2,0,0))
 #c10 = np.array((2,1,1))
 
 
-balls = [[c1,r1],[c2,r2],[c3,r3]]#,[c4,r4],[c5,r5],[c6,r6],[c6,r6],[c7,r7],[c8,r8],[c9,r9]]
+balls = [[c1,r1],[c2,r2],[c3,r3],[c4,r4]]#,[c5,r5],[c6,r6],[c6,r6],[c7,r7],[c8,r8],[c9,r9]]
 
 
 #function test data ends here
@@ -60,12 +60,15 @@ curve, sampleArray = stabbing_path(balls, n_samples)
 #c1,c2,p = convertCoordinates(np.array((0,0,1)),np.array((2,1,1)),np.array((0,1,1)))
 #t1,t2 = outerTangents(.5,c1,1.5,c2)
 
-
-c1 = plt.Circle((c1[0],c1[1]), r1, color = 'r')
-c2 = plt.Circle((c2[0],c2[1]), r2, color = 'b')
-c3 = plt.Circle((c3[0],c3[1]), r3, color = 'g')
-
 fig, ax = plt.subplots()
+
+
+c = list()
+
+for i in range(len(balls)):
+    c.append(plt.Circle((balls[i][0][0],balls[i][0][1]), balls[i][1]))
+    ax.add_patch(c[i])
+
 #plt.xlim(-2, 5)
 #plt.ylim(-2, 5)
 #ax.plot(p[0],p[1], 'o', color = 'g')
@@ -75,9 +78,7 @@ fig, ax = plt.subplots()
 #t2xs=[t2[0][0],t2[1][0]]
 #t2ys=[t2[0][1],t2[1][1]]
 #ax.plot(t2xs,t2ys, color='black')
-ax.add_patch(c1)
-ax.add_patch(c2)
-ax.add_patch(c3)
+
 for i in range(len(sampleArray)):
     ax.scatter(sampleArray[i][:,0], sampleArray[i][:,1])
 ax.plot(curve[:,0], curve[:,1], color = 'black')
