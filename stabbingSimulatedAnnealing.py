@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Nov 17 14:37:15 2022
-
 @author: Alex
 """
 
@@ -13,7 +12,7 @@ from readData import oneTrack
 from stabbing import *
 
 
-n_samples = 500
+n_samples = 50
 balls = []
 
 
@@ -24,28 +23,28 @@ balls = []
 #print(track[1])
 
 r1 = .5
-c1 = np.array((0,0,0))
+c1 = np.array((0,0,1))
 r2 = .5
-c2 = np.array((1,.5,0))
+c2 = np.array((1,0,1))
 r3 = .5
-c3 = np.array((2,.5,0))
-r4 = 1
-c4 = np.array((3,0,0))
-#r5 = 1
-#c5 = np.array((0,4,1))
-#r6 = 1
-#c6 = np.array((1,4,1))
-#r7 = 1
-#c7 = np.array((5,4,1))
-#r8 = 1
-#c8 = np.array((2,2,5))
-#r9 = 1
-#c9 = np.array((4,1,4))
-#r10 = 1
-#c10 = np.array((2,1,1))
+c3 = np.array((2,0,1))
+r4 = .5
+c4 = np.array((3,0,2))
+r5 = .5
+c5 = np.array((4,0,2))
+r6 = .5
+c6 = np.array((5,0,2))
+r7 = .5
+c7 = np.array((6,0,3))
+r8 = .5
+c8 = np.array((7,0,3))
+r9 = .5
+c9 = np.array((8,0,4))
+r10 = .5
+c10 = np.array((9,0,4))
 
 
-balls = [[c1,r1],[c2,r2],[c3,r3],[c4,r4]]#,[c5,r5],[c6,r6],[c6,r6],[c7,r7],[c8,r8],[c9,r9]]
+balls = [[c1,r1],[c2,r2],[c3,r3],[c4,r4],[c5,r5],[c6,r6],[c7,r7],[c8,r8],[c9,r9]]
 
 
 #function test data ends here
@@ -61,13 +60,11 @@ curve, sampleArray = stabbing_path(balls, n_samples)
 #t1,t2 = outerTangents(.5,c1,1.5,c2)
 
 fig, ax = plt.subplots()
-
+#fig = plt.figure()
+#ax = Axes3D(fig)
 
 c = list()
 
-#for i in range(len(balls)):
-#    c.append(plt.Circle((balls[i][0][0],balls[i][0][1]), balls[i][1]))
-#    ax.add_patch(c[i])
 
 #plt.xlim(-2, 5)
 #plt.ylim(-2, 5)
@@ -81,9 +78,13 @@ c = list()
 for i in range(len(sampleArray)):
     ax.scatter(sampleArray[i][:,0], sampleArray[i][:,1])
 ax.plot(curve[:,0], curve[:,1], color = 'black')
-#ax.set_aspect('equal', adjustable='datalim')
-ax.plot()
+#for i in range(len(balls)):
+#    c.append(plt.Circle((balls[i][0][0],balls[i][0][1]), balls[i][1]))
+#    ax.add_patch(c[i])
+
 plt.show()
+#ax.set_aspect('equal', adjustable='datalim')
+
 #plot starts here
 #fig = plt.figure()
 #ax = Axes3D(fig)
@@ -110,4 +111,3 @@ plt.show()
 #        yys.append(track[i][1])
 #        zzs.append(track[i][2])
 #ax.plot(xxs,yys,zzs, color = 'blue')
-ax.plot(curve[:,0], curve[:,1], color = 'black')
