@@ -37,16 +37,15 @@ def f(x, *args):
     return min(tmp)
 
 def computeStabber(samples, start, end):
+    print(start,end)
+    n = (end - start)+1
 
-    n = end - start
-
-    listZip = [0] * n
-
-    res = optimize.dual_annealing(f, args=(samples,), bounds=list(zip(listZip,[len(samples[i])-0.001 for i in range(start, end)])))
+    listZip = [0] * (n)
+    res = optimize.dual_annealing(f, args=(samples,), bounds=list(zip(listZip,[len(samples[i])-0.001 for i in range(start, end+1)])))
 
     xf = res['x']
     curveList = []
-    for i in range(start, end):
+    for i in range(start, end+1):
         curveList.append(samples[i][int(xf[i-start])])
     return(np.array(curveList))
 
@@ -158,7 +157,7 @@ def isStabbable(balls, samples, start, end):
         return True
 
 def isStabbableTrue(balls, samples, start, end):
-    n = end - start
+    n = (end - start) +1
     if n < 3:
         return True
     else:
@@ -166,8 +165,8 @@ def isStabbableTrue(balls, samples, start, end):
             for i in range(start, j):
                 c1 = balls[i][0]
                 r1 = balls[i][1]
-                c2 = balls[end-1][0]
-                r2 = balls[end-1][1]
+                c2 = balls[end][0]
+                r2 = balls[end][1]
                 points = [p for p in samples[j] if checkContainment(c1, r1, c2, r2, p)]
                 if len(points) == 0:
                     return False
@@ -184,13 +183,20 @@ def stabbing_path(balls, n_samples):
     stabbable = True
     while end < len(balls):
         if stabbable:
-            end += 1
-            stabbable = isStabbableTrue(balls, samples, start, end)
             print(start, end, stabbable)
+            if(end == len(balls)-1):
+                print('last segment')
+                segments.append(computeStabber(samples, start, end))
+                break
+            else:
+                end += 1
+                stabbable = isStabbableTrue(balls, samples, start, end)
         else:
+            print(start, end, stabbable)
             samples = pruneSamples(balls, samples, start, end-1)
             segments.append(computeStabber(samples, start, end-1))
-            start = end
+            print('segments:',segments)
+            start = end         
             stabbable = True
     if not stabbable:
         samples = pruneSamples(balls, samples, start, end-1)
