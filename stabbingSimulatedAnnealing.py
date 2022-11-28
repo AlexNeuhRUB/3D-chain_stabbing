@@ -13,7 +13,7 @@ from readData import oneTrack
 from stabbing import *
 
 
-n_samples = 500
+n_samples = 5000
 balls = []
 
 
@@ -60,8 +60,9 @@ curve, sampleArray = stabbing_path(balls, n_samples)
 #c1,c2,p = convertCoordinates(np.array((0,0,1)),np.array((2,1,1)),np.array((0,1,1)))
 #t1,t2 = outerTangents(.5,c1,1.5,c2)
 
-fig, ax = plt.subplots()
-
+#fig, ax = plt.subplots()
+fig = plt.figure()
+ax = Axes3D(fig)
 
 c = list()
 
@@ -80,10 +81,10 @@ for i in range(len(balls)):
 #ax.plot(t2xs,t2ys, color='black')
 for i in range(len(sampleArray)):
     ax.scatter(sampleArray[i][:,0], sampleArray[i][:,1])
-ax.plot(curve[:,0], curve[:,1], color = 'black')
-#ax.set_aspect('equal', adjustable='datalim')
-ax.plot()
+ax.plot(curve[:-1,0], curve[:-1,1], curve[:-1,2], color = 'black')
 plt.show()
+#ax.set_aspect('equal', adjustable='datalim')
+
 #plot starts here
 #fig = plt.figure()
 #ax = Axes3D(fig)
@@ -110,4 +111,3 @@ plt.show()
 #        yys.append(track[i][1])
 #        zzs.append(track[i][2])
 #ax.plot(xxs,yys,zzs, color = 'blue')
-ax.plot(curve[:,0], curve[:,1], color = 'black')

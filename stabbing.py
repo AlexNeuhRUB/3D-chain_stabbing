@@ -37,7 +37,6 @@ def f(x, *args):
         vectors.append(curve[i+1] - curve[i])
     for i in range(len(vectors)-1):
         angles.append(-angle(vectors[i],vectors[i+1]))
-    print(len(curve), len(vectors), len(angles))
     return max(angles)
 
 def computeStabber(samples, start, end):
