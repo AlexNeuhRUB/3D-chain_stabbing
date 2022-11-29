@@ -17,7 +17,7 @@ balls = []
 
 print('parsingSingleTrack')
 track=oneTrack()
-for i in range(10):
+for i in range(len(track)):
     track[i] = 10000*track[i]
     balls.append([track[i], 1])
 print(track[1])
