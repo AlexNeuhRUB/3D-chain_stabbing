@@ -1,6 +1,7 @@
 import numpy as np
 import math
 from scipy import optimize
+import random
 from ballSampling import rejection_sampling
 
 def unit_vector(vector):
@@ -88,7 +89,7 @@ def convertCoordinates(p0, p1, p2):
 
 def checkContainment(c1, r1, c2, r2, p):
     p1, p2, p3 = convertCoordinates(c1, c2, p)
-    t1, t2 = outerTangents(r1, p1.copy(), r2, p2.copy())
+    t1, t2 = outerTangents(r1, p1, r2, p2)
     t1A = t1[0]
     t1B = t1[1]
     t2A = t2[0]
@@ -118,14 +119,16 @@ def isStabbableLoop(balls, old_samples, new_samples, start, end):
                 return False
     return True
 
-def stabbing_path(balls, n_samples=None):
+def stabbing_path(balls, n_samples=None,seed=None):
     if n_samples is None:
         n_samples = int(100 * np.log(len(balls)))
+    if seed is None:       
+        seed = random.randrange(11111, 99999, 5)
     old_samples = list()
     new_samples = list()
     segments = list()
     for i in range(len(balls)):
-        new_samples.append(rejection_sampling(3, balls[i][1], balls[i][0], n_samples))
+        new_samples.append(rejection_sampling(3, balls[i][1], balls[i][0], n_samples,seed))
         old_samples.append(new_samples[i])
     start = 0;
     end = 0;
@@ -138,7 +141,8 @@ def stabbing_path(balls, n_samples=None):
             end += 1
         else:
             end -= 1
-            segments.append(computeStabber(old_samples, start, end))
+            tmp = computeStabber(old_samples, start, end-1)
+            segments.append((tmp[0],tmp[len(tmp)-1]))
             new_samples = old_samples.copy()
             start = end
             stabbable = True
