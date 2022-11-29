@@ -105,7 +105,6 @@ def checkContainment(c1, r1, c2, r2, p):
             return True
         return False
 
-
 def isStabbableLoop(balls, old_samples, new_samples, start, end):
     for j in range(start + 1, end):
         for i in range(start, j):
@@ -116,7 +115,6 @@ def isStabbableLoop(balls, old_samples, new_samples, start, end):
             points = [p for p in old_samples[j] if checkContainment(c1.copy(), r1, c2.copy(), r2, p.copy())]
             new_samples[j] = np.array(points)
             if len(points) == 0:
-                print(j)
                 return False
     return True
 
@@ -128,6 +126,7 @@ def stabbing_path(balls, n_samples=None):
     segments = list()
     for i in range(len(balls)):
         new_samples.append(rejection_sampling(3, balls[i][1], balls[i][0], n_samples))
+        old_samples.append(new_samples[i])
     start = 0;
     end = 0;
     stabbable = True
@@ -144,10 +143,11 @@ def stabbing_path(balls, n_samples=None):
             start = end
             stabbable = True
     if not stabbable:
-        tmp = computeStabber(old_samples, start, end)
+        tmp = computeStabber(old_samples, start, end-1)
         segments.append((tmp[0],tmp[len(tmp)-1]))
         segments.append(np.array([old_samples[-1][0]]))
     else:
         tmp = computeStabber(old_samples, start, end)
         segments.append((tmp[0],tmp[len(tmp)-1]))
+        old_samples = new_samples
     return np.concatenate(segments), old_samples

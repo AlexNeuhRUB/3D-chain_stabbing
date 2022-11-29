@@ -24,7 +24,7 @@ balls = []
 r1 = .5
 c1 = np.array((0,0,0))
 r2 = .5
-c2 = np.array((1,1.8,0))
+c2 = np.array((1,.75,0))
 r3 = .5
 c3 = np.array((2,0,0))
 r4 = .5
@@ -34,16 +34,17 @@ c5 = np.array((4,0,0))
 r6 = .5
 c6 = np.array((5,0,0))
 r7 = .5
-c7 = np.array((6,-2,0))
+c7 = np.array((6,2,0))
 r8 = .5
-c8 = np.array((7,0,0))
+c8 = np.array((6.4,0,0))
 r9 = .5
 c9 = np.array((8,0,0))
 r10 = .5
 c10 = np.array((9,0,0))
 
 
-balls = [[c1,r1],[c2,r2],[c3,r3],[c4,r4],[c5,r5],[c6,r6],[c7,r7],[c8,r8],[c9,r9]]
+#balls = [[c1,r1],[c2,r2],[c3,r3],[c4,r4],[c5,r5],[c6,r6],
+balls = [[c7,r7],[c8,r8],[c9,r9]]
 
 
 #function test data ends here
