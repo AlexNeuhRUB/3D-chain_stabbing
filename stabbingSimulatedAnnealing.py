@@ -43,8 +43,7 @@ r10 = .5
 c10 = np.array((9,0,0))
 
 
-#balls = [[c1,r1],[c2,r2],[c3,r3],[c4,r4],[c5,r5],[c6,r6],
-balls = [[c7,r7],[c8,r8],[c9,r9]]
+balls = [[c1,r1],[c2,r2],[c3,r3],[c4,r4],[c5,r5],[c6,r6],[c7,r7],[c8,r8],[c9,r9]]
 
 
 #function test data ends here
