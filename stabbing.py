@@ -119,16 +119,14 @@ def isStabbableLoop(balls, old_samples, new_samples, start, end):
                 return False
     return True
 
-def stabbing_path(balls, n_samples=None,seed=None):
+def stabbing_path(balls, n_samples=None):
     if n_samples is None:
         n_samples = int(100 * np.log(len(balls)))
-    if seed is None:       
-        seed = random.randrange(11111, 99999, 5)
     old_samples = list()
     new_samples = list()
     segments = list()
     for i in range(len(balls)):
-        new_samples.append(rejection_sampling(3, balls[i][1], balls[i][0], n_samples,seed))
+        new_samples.append(rejection_sampling(3, balls[i][1], balls[i][0], n_samples))
         old_samples.append(new_samples[i])
     start = 0;
     end = 0;

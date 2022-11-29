@@ -11,7 +11,8 @@ def parseTracks():
         if data.loc[i,'track_id'] == data.loc[i-1,'track_id']:
             temptrack.append(np.array((data.loc[i,'latitude'], data.loc[i,'longitude'],1)))
         else:
-            tracks.append(temptrack)
+            if len(temptrack)>11:
+                tracks.append(temptrack)
             temptrack=[]
             temptrack.append(np.array((data.loc[i,'latitude'], data.loc[i,'longitude'],1)))
     return tracks
