@@ -15,11 +15,11 @@ from stabbing import *
 balls = []
 
 
-#print('parsingSingleTrack')
-#track=oneTrack()
-#for i in range(10):
-#    balls.append([track[i], 1])
-#print(track[1])
+print('parsingSingleTrack')
+track=oneTrack()
+for i in range(10):
+    balls.append([100*track[i], 0.01])
+print(track[1])
 
 r1 = .5
 c1 = np.array((0,0,0))
@@ -43,7 +43,7 @@ r10 = .5
 c10 = np.array((9,0,0))
 
 
-balls = [[c1,r1],[c2,r2],[c3,r3],[c4,r4],[c5,r5],[c6,r6],[c7,r7],[c8,r8],[c9,r9]]
+#balls = [[c1,r1],[c2,r2],[c3,r3],[c4,r4],[c5,r5],[c6,r6],[c7,r7],[c8,r8],[c9,r9]]
 
 
 #function test data ends here
@@ -62,8 +62,8 @@ curve, sampleArray = stabbing_path(balls)
 fig, ax = plt.subplots()
 #fig = plt.figure()
 #ax = Axes3D(fig)
-ax.set_xlim([0, 10])
-ax.set_ylim([-5, 5])
+#ax.set_xlim([0, 10])
+#ax.set_ylim([-5, 5])
 
 c = list()
 

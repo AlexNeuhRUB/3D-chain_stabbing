@@ -1,4 +1,5 @@
 import numpy as np
+import math
 from scipy import optimize
 from ballSampling import rejection_sampling
 
@@ -48,13 +49,13 @@ def computeStabber(samples, start, end):
     return(np.array(curve))
 
 def outerTangents(r1, c1, r2, c2):
-    angle1 = np.arctan2(c2[1] - c1[1], c2[0] - c1[0])
-    angle2 = np.arccos((r1 - r2) / np.linalg.norm(c1 - c2))
+    angle1 = math.atan2(c2[1] - c1[1], c2[0] - c1[0])
+    angle2 = math.acos((r1 - r2) / np.linalg.norm(c1 - c2))
 
-    t1StartX = c1[0] + np.cos(angle1 + angle2) * r1
-    t1StartY = c1[1] + np.sin(angle1 + angle2) * r1
-    t1EndX = c2[0] + np.cos(angle1 + angle2) * r2
-    t1EndY = c2[1] + np.sin(angle1 + angle2) * r2
+    t1StartX = c1[0] + math.cos(angle1 + angle2) * r1
+    t1StartY = c1[1] + math.sin(angle1 + angle2) * r1
+    t1EndX = c2[0] + math.cos(angle1 + angle2) * r2
+    t1EndY = c2[1] + math.sin(angle1 + angle2) * r2
 
     t2StartX = c1[0] + np.cos(angle1 - angle2) * r1
     t2StartY = c1[1] + np.sin(angle1 - angle2) * r1
@@ -143,8 +144,10 @@ def stabbing_path(balls, n_samples=None):
             stabbable = True
     if not stabbable:
         tmp = computeStabber(old_samples, start, end-1)
-        segments.append(computeStabber(old_samples, start, end))
+        segments.append((tmp[0],tmp[len(tmp)-1]))
+        segments.append(np.array([old_samples[-1][0]]))
     else:
-        segments.append(computeStabber(old_samples, start, end))
+        tmp = computeStabber(old_samples, start, end)
+        segments.append((tmp[0],tmp[len(tmp)-1]))
         old_samples = new_samples
     return np.concatenate(segments), old_samples
