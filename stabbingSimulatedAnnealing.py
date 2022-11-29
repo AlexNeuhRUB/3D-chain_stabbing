@@ -12,7 +12,6 @@ from readData import oneTrack
 from stabbing import *
 
 
-n_samples = 500
 balls = []
 
 
@@ -52,7 +51,7 @@ balls = [[c1,r1],[c2,r2],[c3,r3],[c4,r4],[c5,r5],[c6,r6],[c7,r7],[c8,r8],[c9,r9]
         
 #curve = computeStabber(sampleArray)
 
-curve, sampleArray = stabbing_path(balls, n_samples)
+curve, sampleArray = stabbing_path(balls)
 #print(curve)
 
 
