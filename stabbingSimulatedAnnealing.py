@@ -23,25 +23,25 @@ balls = []
 #print(track[1])
 
 r1 = .5
-c1 = np.array((0,0,1))
+c1 = np.array((0,0,0))
 r2 = .5
-c2 = np.array((1,0,1))
+c2 = np.array((1,1.8,0))
 r3 = .5
-c3 = np.array((2,0,1))
+c3 = np.array((2,0,0))
 r4 = .5
-c4 = np.array((3,4,2))
+c4 = np.array((3,0,0))
 r5 = .5
-c5 = np.array((4,0,2))
+c5 = np.array((4,0,0))
 r6 = .5
-c6 = np.array((5,0,2))
+c6 = np.array((5,0,0))
 r7 = .5
-c7 = np.array((6,0,3))
+c7 = np.array((6,-2,0))
 r8 = .5
-c8 = np.array((7,0,3))
+c8 = np.array((7,0,0))
 r9 = .5
-c9 = np.array((8,4,4))
+c9 = np.array((8,0,0))
 r10 = .5
-c10 = np.array((9,0,4))
+c10 = np.array((9,0,0))
 
 
 balls = [[c1,r1],[c2,r2],[c3,r3],[c4,r4],[c5,r5],[c6,r6],[c7,r7],[c8,r8],[c9,r9]]
@@ -78,12 +78,13 @@ c = list()
 #t2xs=[t2[0][0],t2[1][0]]
 #t2ys=[t2[0][1],t2[1][1]]
 #ax.plot(t2xs,t2ys, color='black')
+#for i in range(len(balls)):
+#    c.append(plt.Circle((balls[i][0][0],balls[i][0][1]), balls[i][1]))
+#    ax.add_patch(c[i])
 for i in range(len(sampleArray)):
     ax.scatter(sampleArray[i][:,0], sampleArray[i][:,1])
 ax.plot(curve[:,0], curve[:,1], color = 'black')
-for i in range(len(balls)):
-    c.append(plt.Circle((balls[i][0][0],balls[i][0][1]), balls[i][1]))
-    ax.add_patch(c[i])
+
 
 plt.show()
 #ax.set_aspect('equal', adjustable='datalim')

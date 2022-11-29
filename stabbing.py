@@ -67,27 +67,50 @@ def outerTangents(r1, c1, r2, c2):
     t2 = [[t2StartX, t2StartY], [t2EndX, t2EndY]]
     return t1, t2
 
-def convertCoordinates(p1, p2, p3):
-    """p1 should be center of ball 1, since we project it on 0,0 and p2 to be on x axis"""
+#def convertCoordinates_deprecated(p1, p2, p3):
+#    """p1 should be center of ball 1, since we project it on 0,0 and p2 to be on x axis"""
+    
+#    #move such that p1 is origin
+#    u = unit_vector(p2 - p1)
+#    v = unit_vector(p3 - p1)
+#    
+#    
+#    #compute normals
+#    p2_x = np.dot(u, p2 - p1)
+#    p2_y = np.dot(v, p2 - p1)#
+#
+#    
+#    p3_x = np.dot(u, p3 - p1)
+#    p3_y = np.dot(v, p3 - p1)#
+#
+#    #rotate projected points
+#    alpha = np.arctan2(p2_y, p2_x)
+#    p2_xx = p2_x * np.cos(alpha) + p2_y * np.sin(alpha)
+#    p2_yy = -p2_x * np.sin(alpha) + p2_y * np.cos(alpha)
+#    p3_xx = p3_x * np.cos(alpha) + p3_y * np.sin(alpha)
+#    p3_yy = -p3_x * np.sin(alpha) + p3_y * np.cos(alpha)##
+#
+#    return np.array((0,0)), np.array((round(p2_xx,12),round(p2_yy,12))), np.array((round(p3_xx,12), round(p3_yy,12)))
 
-    u = unit_vector(p2 - p1)
-    v = unit_vector(p3 - p1)
-
-    #project p1 to [0,0], hence move p2,p3 accordingly
-    p2_x = np.dot(u, p2 - p1)
-    p2_y = np.dot(v, p2 - p1)
-
-    p3_x = np.dot(u, p3 - p1)
-    p3_y = np.dot(v, p3 - p1)
-
-    #rotate projected points
-    alpha = np.arctan2(p2_y, p2_x)
-    p2_xx = p2_x * np.cos(alpha) + p2_y * np.sin(alpha)
-    p2_yy = -p2_x * np.sin(alpha) + p2_y * np.cos(alpha)
-    p3_xx = p3_x * np.cos(alpha) + p3_y * np.sin(alpha)
-    p3_yy = -p3_x * np.sin(alpha) + p3_y * np.cos(alpha)
-
-    return np.array((0,0)), np.array((round(p2_xx,4),round(p2_yy,4))), np.array((round(p3_xx,4), round(p3_yy,4)))
+def convertCoordinates(p0, p1, p2):
+    x = unit_vector(p1-p0)
+    z = np.cross(x,(p2-p0))
+    y = np.cross(z,x)
+    o = p0
+    
+    #projection of p0 the origin
+    x0 = 0
+    y0 = 0
+    
+    #projection of p1 to d(p1,p0),0
+    x1 = np.linalg.norm(p1-o)
+    y1 = 0
+    
+    #projection of p2
+    x2 = np.dot((p2-o),x)
+    y2 = np.dot((p2-o), y)
+    
+    return np.array((x0,y0)), np.array((round(x1,12),round(y1,12))), np.array((round(x2), round(y2)))
 
 def checkContainment(c1, r1, c2, r2, p):
     #check collinearity
@@ -97,7 +120,7 @@ def checkContainment(c1, r1, c2, r2, p):
     #        return True
     #    return False
     p1, p2, p3 = convertCoordinates(c1, c2, p)
-    t1, t2 = outerTangents(r1, p1, r2, p2)
+    t1, t2 = outerTangents(r1, p1.copy(), r2, p2.copy())
     t1A = t1[0]
     t1B = t1[1]
     t2A = t2[0]
@@ -122,7 +145,7 @@ def isStabbableLoop(balls, old_samples, new_samples, start, end):
             r1 = balls[i][1]
             c2 = balls[end][0]
             r2 = balls[end][1]
-            points = [p for p in old_samples[j] if checkContainment(c1, r1, c2, r2, p)]
+            points = [p for p in old_samples[j] if checkContainment(c1.copy(), r1, c2.copy(), r2, p.copy())]
             new_samples[j] = np.array(points)
             if len(points) == 0:
                 print(j)
@@ -150,9 +173,13 @@ def stabbing_path(balls, n_samples):
             start = end
             stabbable = True
     if not stabbable:
-        segments.append(computeStabber(old_samples, start, end))
-       # segments.append(np.array([samples[-1][0]]))
+        #segments.append(computeStabber(old_samples, start, end))
+        tmp = computeStabber(old_samples, start, end)
+        segments.append((tmp[0],tmp[len(tmp)-1]))
+        segments.append(np.array([old_samples[-1][0]]))
     else:
-        segments.append(computeStabber(old_samples, start, end))
+        #segments.append(computeStabber(old_samples, start, end))
+        tmp = computeStabber(old_samples, start, end)
+        segments.append((tmp[0],tmp[len(tmp)-1]))
     #print('EndTesting')
     return np.concatenate(segments), old_samples
