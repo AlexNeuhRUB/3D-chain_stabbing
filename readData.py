@@ -5,6 +5,7 @@ import numpy as np
 def parseTracks():
     tracks=[]
     temptrack=[]
+    ids=[]
     data = pd.read_csv("go_track_trackspoints.csv")
     temptrack.append(np.array((data.loc[0,'latitude'], data.loc[0,'longitude'],1)))
     for i in range(1,len(data)):
@@ -13,9 +14,10 @@ def parseTracks():
         else:
             if len(temptrack)>11:
                 tracks.append(temptrack)
+                ids.append(data.loc[i-1,'track_id'])
             temptrack=[]
             temptrack.append(np.array((data.loc[i,'latitude'], data.loc[i,'longitude'],1)))
-    return tracks
+    return tracks,ids
 
 def oneTrack():
     temptrack=[]
