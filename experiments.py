@@ -26,7 +26,7 @@ if not isExist:
    os.makedirs(path)
    print("The new directory is created!")
 
-for k in range(3):
+for k in range(10):
     track = tracks[l]
     balls = []
     m= len(track)
@@ -53,7 +53,7 @@ for k in range(3):
     plt.close()
         
         
-    d["Track ID"].append(str(ids[l]))
+    d["Track ID"].append(str(l))
     d["radius"].append(str(radius))
     d["epsilon"].append(str(epsilon))
     d["Input size"].append(len(track)-1)
