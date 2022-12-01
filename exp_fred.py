@@ -8,7 +8,7 @@ import os
 import json
 import Fred as fred
 
-radius = .001
+radius = .1
 tracks,ids=rd.parseTracks()
 
 for k in range(1):
