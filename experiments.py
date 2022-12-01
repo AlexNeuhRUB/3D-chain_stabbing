@@ -35,10 +35,8 @@ for k in range(100):
             balls.append([track[i], radius])
         
     
-        N=int(100 * np.log(len(balls)))
-    
-        start_time = time.time()
-        curve, sampleArray = stabbing_path(balls,N)
+        start_time = time.process_time()
+        curve, sampleArray = stabbing_path(balls)
         running_time = round(time.process_time() - start_time,4)
     
         fig, ax = plt.subplots()
