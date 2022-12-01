@@ -7,7 +7,7 @@ import time
 import os
 import json
 
-radius = .001
+radius = 1
 tracks,ids=rd.parseTracks()
 
 
@@ -28,7 +28,7 @@ for tr in [0,1,9]:
     for epsilon in [.3,.4,.5]:
         os.makedirs(path +'/eps'+str(epsilon))
         tr_exp = ids[tr]
-        for k in range(50):
+        for k in range(10):
             track = tracks[tr].copy()
             balls = []
             m= len(track)
