@@ -7,50 +7,55 @@ import time
 import os
 import json
 
+radius = .01
+tracks,ids=rd.parseTracks()
 
-tracks=rd.parseTracks()
-current_time = datetime.now()
-timestamp = current_time.timestamp()
-date_time = datetime.fromtimestamp(timestamp)
-str_date_time = date_time.strftime("%d-%m-%Y_%H_%M_%S")
-path = "Experiment_" + str_date_time
-# Check whether the specified path exists or not
-isExist = os.path.exists(path)
-if not isExist:
+for k in range(100):
+    current_time = datetime.now()
+    timestamp = current_time.timestamp()
+    date_time = datetime.fromtimestamp(timestamp)
+    str_date_time = date_time.strftime("%d-%m-%Y_%H_%M_%S")
+    path = "Experiment_" + str_date_time
+    # Check whether the specified path exists or not
+    isExist = os.path.exists(path)
+    if not isExist:
 
-   # Create a new directory because it does not exist
-   os.makedirs(path)
-   print("The new directory is created!")
+        # Create a new directory because it does not exist
+        os.makedirs(path)
+        print("The new directory is created!")
+    for l in [0,1,9]:
+        directory = path+'/Track'+str(ids[l])
+        if not isExist:
+            os.makedirs(directory)
+        track = tracks[l]
+        balls = []
+        m= len(track)
+        for i in range(m):
+            track[i] = 10000*track[i]
+            balls.append([track[i], radius])
+        
+    
+        N=int(100 * np.log(len(balls)))
+    
+        start_time = time.time()
+        curve, sampleArray = stabbing_path(balls,N)
+        running_time = round(time.process_time() - start_time,4)
+    
+        fig, ax = plt.subplots()
+        ax.plot(curve[:,0], curve[:,1], color = 'black')
+        xs =[]
+        ys=[]
+        for i in range(m):
+            xs.append(track[i][0])
+            ys.append(track[i][1])
+        ax.plot(xs,ys, color = 'red')
+    
+        fig.savefig(directory+'/plot_for_track'+str(ids[l])+'.svg')  
+        fig.clear()
+    
+        keys = ['Track ID', 'radius' 'Input size' 'Output size', 'running time (secs)','Input lattitude','Input longitude', 'Output lattitude','Output longitude']
+        values = [str(ids[l]),  str(radius),len(track)-1,len(curve)-1,running_time, xs, ys, curve[:,0].tolist(),curve[:,1].tolist()]
+        dict_data = dict(zip(keys, values))
 
-
-for l in range(len(tracks)):
-    track = tracks[l]
-    balls = []
-    m= len(track)
-    for i in range(m):
-        track[i] = 10000*track[i]
-        balls.append([track[i], 1])
-
-
-    start_time = time.process_time()
-    curve, sampleArray = stabbing_path(balls)
-    running_time = round(time.process_time() - start_time,4)
-
-    fig, ax = plt.subplots()
-    ax.plot(curve[:,0], curve[:,1], color = 'black')
-    xs =[]
-    ys=[]
-    for i in range(m):
-        xs.append(track[i][0])
-        ys.append(track[i][1])
-    ax.plot(xs,ys, color = 'red')
-
-    fig.savefig(path+'/plot_track'+str(l+1)+'.svg')  
-    fig.clear()
-
-    keys = ['Input lattitude','Input longitude', 'Input size', 'Output lattitude','Output longitude', 'Output size', 'running time (secs)']
-    values = [xs, ys, len(track)-1,curve[:,0].tolist(),curve[:,1].tolist(),len(curve)-1,running_time]
-    dict_data = dict(zip(keys, values))
-
-    with open(path+'/result_track'+str(l+1)+'.json', 'w') as fp:
-        json.dump(dict_data,fp, indent=4)
+        with open(directory+'/result_track'+str(ids[l])+'.json', 'w') as fp:
+            json.dump(dict_data,fp, indent=4)
