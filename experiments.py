@@ -32,11 +32,9 @@ for l in range(len(tracks)):
         balls.append([track[i], 1])
 
 
-    N=int(100 * np.log(len(balls)))
-
-    start_time = time.time()
-    curve, sampleArray = stabbing_path(balls,N)
-    running_time= round(time.time() - start_time,4)
+    start_time = time.process_time()
+    curve, sampleArray = stabbing_path(balls)
+    running_time = round(time.process_time() - start_time,4)
 
     fig, ax = plt.subplots()
     ax.plot(curve[:,0], curve[:,1], color = 'black')
