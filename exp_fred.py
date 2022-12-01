@@ -8,7 +8,7 @@ import os
 import json
 import Fred as fred
 
-radius = .001
+radius = 1
 tracks,ids=rd.parseTracks()
 l=0
 
@@ -27,7 +27,7 @@ for tr in [0,1,9]:
         # Create a new directory because it does not exist
         os.makedirs(path)
         print("The new directory is created!")
-    for epsilon in [0.1,0.15,0.2]:
+    for epsilon in [0]:
         os.makedirs(path +'/eps'+str(epsilon))
         tr_exp = ids[tr]
         for k in range(100):
