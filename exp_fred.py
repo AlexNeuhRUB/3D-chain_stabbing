@@ -8,55 +8,68 @@ import os
 import json
 import Fred as fred
 
-radius = .1
+radius = .001
 tracks,ids=rd.parseTracks()
+l=0
 
-for k in range(1):
-    current_time = datetime.now()
-    timestamp = current_time.timestamp()
-    date_time = datetime.fromtimestamp(timestamp)
-    str_date_time = date_time.strftime("%d-%m-%Y_%H_%M_%S")
-    path = "fred/" + str_date_time
-    # Check whether the specified path exists or not
+
+current_time = datetime.now()
+timestamp = current_time.timestamp()
+date_time = datetime.fromtimestamp(timestamp)
+str_date_time = date_time.strftime("%d-%m-%Y_%H_%M_%S")
+
+for tr in [0,1,9]:
+    path = "fred/Track"+str(ids[tr])+'_'+ str_date_time
+    d = {"Track ID":[], "radius":[], "epsilon":[], "Input size":[], "Output size":[], "running time (secs)":[],"Input lattitude":[],"Input longitude":[], "Output lattitude":[],"Output longitude":[]}
+# Check whether the specified path exists or not
     isExist = os.path.exists(path)
     if not isExist:
-
         # Create a new directory because it does not exist
         os.makedirs(path)
         print("The new directory is created!")
-    for l in [0,1,9]:
-        directory = path+'/Track'+str(ids[l])
-        if not isExist:
-            os.makedirs(directory)
-        track = tracks[l]
-        balls = []
-        m= len(track)
-        for i in range(m):
-            track[i] = 10000*track[i]
-            balls.append([track[i], radius])
+    for epsilon in [0.1,0.15,0.2]:
+        os.makedirs(path +'/eps'+str(epsilon))
+        tr_exp = ids[tr]
+        for k in range(100):
+            track = tracks[tr].copy()
+            m= len(track)
+            for i in range(m):
+                track[i] = 10000*track[i]
+            
+            print('Experiment '+str(k)+' starting')
+            start_time = time.process_time()
+            curve = fred.approximate_minimum_link_simplification(fred.Curve(track), radius)
+            curve = curve.values
+            running_time = round(time.process_time() - start_time,4)
+            
+            fig, ax = plt.subplots()
+            ax.plot(curve[:,0], curve[:,1], color = 'black')
+            xs =[]
+            ys=[]
+            for i in range(m):
+                xs.append(track[i][0])
+                ys.append(track[i][1])
+                ax.plot(xs,ys, color = 'red')
+                
+            fig.savefig(path+'/eps'+str(epsilon)+'/exp_'+str(k)+'.svg')  
+            fig.clear()
+            plt.close()
         
-    
-        start_time = time.process_time()
-        #curve, sampleArray = stabbing_path(balls)
-        curve = fred.approximate_minimum_link_simplification(fred.Curve(track), radius)
-        curve = curve.values
-        running_time = round(time.process_time() - start_time,4)
-    
-        fig, ax = plt.subplots()
-        ax.plot(curve[:,0], curve[:,1], color = 'black')
-        xs =[]
-        ys=[]
-        for i in range(m):
-            xs.append(track[i][0])
-            ys.append(track[i][1])
-        ax.plot(xs,ys, color = 'red')
-    
-        fig.savefig(directory+'/plot_for_track'+str(ids[l])+'.svg')  
-        fig.clear()
-    
-        keys = ['Track ID', 'radius', 'Input size', 'Output size', 'running time (secs)','Input lattitude','Input longitude', 'Output lattitude','Output longitude']
-        values = [str(ids[l]), str(radius),len(track)-1,len(curve)-1,running_time, xs, ys, curve[:,0].tolist(),curve[:,1].tolist()]
-        dict_data = dict(zip(keys, values))
+        
+            d["Track ID"].append(str(tr_exp))
+            d["radius"].append(str(radius))
+            d["epsilon"].append(str(epsilon))
+            d["Input size"].append(len(track)-1)
+            d["Output size"].append(len(curve)-1)
+            d["running time (secs)"].append(running_time)
+            d["Input lattitude"].append(xs)
+            d["Input longitude"].append(ys)
+            d["Output lattitude"].append(curve[:,0].tolist())
+            d["Output longitude"].append(curve[:,1].tolist())
+        print('Experiment '+str(k)+' finished')
 
-        with open(directory+'/result_track'+str(ids[l])+'.json', 'w') as fp:
-            json.dump(dict_data,fp, indent=4)
+
+    with open(path+'/results.json', 'w') as fp:
+        json.dump(d,fp, indent=4)
+    d = {"Track ID":[], "radius":[], "epsilon":[], "Input size":[], "Output size":[], "running time (secs)":[],"Input lattitude":[],"Input longitude":[], "Output lattitude":[],"Output longitude":[]}
+   

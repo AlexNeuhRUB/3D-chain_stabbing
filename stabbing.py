@@ -125,6 +125,7 @@ def isStabbableLoop(balls, old_samples, new_samples, start, end):
 def stabbing_path(balls, epsilon=0.1, n_samples=None):
     if n_samples is None:
         n_samples = int(10 * 1/epsilon * np.log(len(balls)))
+        print('n_samples',n_samples)
     old_samples = list()
     new_samples = list()
     segments = list()
