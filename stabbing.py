@@ -42,7 +42,7 @@ def computeStabber(samples, start, end):
         ub.append(len(samples[i])-0.001)
 
     res = optimize.dual_annealing(f, args=(samples, start, end), bounds=list(zip(lb,ub)))
-    print(res)
+    #print(res)
     xf = res.x
     curve = list()
     for i in range(start, end):
@@ -51,7 +51,10 @@ def computeStabber(samples, start, end):
 
 def outerTangents(r1, c1, r2, c2):
     angle1 = math.atan2(c2[1] - c1[1], c2[0] - c1[0])
-    angle2 = math.acos((r1 - r2) / np.linalg.norm(c1 - c2))
+    if(c1[0] == c2[0] and c1[1] == c2[1]):
+        angle2 = math.pi/2
+    else:
+        angle2 = math.acos((r1 - r2) / np.linalg.norm(c1 - c2))
 
     t1StartX = c1[0] + math.cos(angle1 + angle2) * r1
     t1StartY = c1[1] + math.sin(angle1 + angle2) * r1
@@ -135,7 +138,7 @@ def stabbing_path(balls, epsilon=0.1, n_samples=None):
         if stabbable:            
             old_samples = new_samples.copy()
             stabbable = isStabbableLoop(balls, old_samples, new_samples, start, end)
-            print(start, end, stabbable)
+            #print(start, end, stabbable)
             end += 1
         else:
             end -= 1

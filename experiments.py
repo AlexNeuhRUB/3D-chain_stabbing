@@ -7,15 +7,17 @@ import time
 import os
 import json
 
-radius = .01
+radius = .1
+epsilon=.5
 tracks,ids=rd.parseTracks()
 
 for k in range(100):
+    print('Experiment '+str(k)+' starting')
     current_time = datetime.now()
     timestamp = current_time.timestamp()
     date_time = datetime.fromtimestamp(timestamp)
     str_date_time = date_time.strftime("%d-%m-%Y_%H_%M_%S")
-    path = "Experiment_" + str_date_time
+    path = "stabbing/" + str_date_time
     # Check whether the specified path exists or not
     isExist = os.path.exists(path)
     if not isExist:
@@ -36,7 +38,7 @@ for k in range(100):
         
     
         start_time = time.process_time()
-        curve, sampleArray = stabbing_path(balls)
+        curve, sampleArray = stabbing_path(balls,epsilon)
         running_time = round(time.process_time() - start_time,4)
     
         fig, ax = plt.subplots()
@@ -50,10 +52,12 @@ for k in range(100):
     
         fig.savefig(directory+'/plot_for_track'+str(ids[l])+'.svg')  
         fig.clear()
-    
-        keys = ['Track ID', 'radius' 'Input size' 'Output size', 'running time (secs)','Input lattitude','Input longitude', 'Output lattitude','Output longitude']
-        values = [str(ids[l]),  str(radius),len(track)-1,len(curve)-1,running_time, xs, ys, curve[:,0].tolist(),curve[:,1].tolist()]
+        plt.close()
+        
+        keys = ['Track ID', 'radius', 'epsilon', 'Input size', 'Output size', 'running time (secs)','Input lattitude','Input longitude', 'Output lattitude','Output longitude']
+        values = [str(ids[l]),  str(radius), str(epsilon),len(track)-1,len(curve)-1,running_time, xs, ys, curve[:,0].tolist(),curve[:,1].tolist()]
         dict_data = dict(zip(keys, values))
 
         with open(directory+'/result_track'+str(ids[l])+'.json', 'w') as fp:
             json.dump(dict_data,fp, indent=4)
+        print('Experiment '+str(k)+' finished')
