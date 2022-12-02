@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Nov 17 09:59:26 2022
-
-@author: Alex
-"""
 import numpy as np
 
 def rejection_sampling(dim, radius, center, N):
