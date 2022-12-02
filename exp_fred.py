@@ -30,7 +30,7 @@ for tr in [0,1,9]:
     for epsilon in [0]:
         os.makedirs(path +'/eps'+str(epsilon))
         tr_exp = ids[tr]
-        for k in range(100):
+        for k in range(10):
             track = tracks[tr].copy()
             m= len(track)
             for i in range(m):
