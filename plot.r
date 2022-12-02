@@ -45,11 +45,14 @@ gdata <- frame %>%
   mutate(Data = paste("Track", track, sep=" ")) %>%
   filter(method == "stabbing")
 
+sdata <- gdata %>%
+  summarize(meancompl=mean(output_len), sdcompl=sd(output_len))
+
 fdata <- frame %>%
   group_by_at(vars(track, epsilon)) %>%
   mutate(Data = paste("Track", track, sep=" ")) %>%
   filter(method == "fred") %>%
-  summarise(mtime = mean(time), sdtime = sd(time))
+  summarise(mtime = mean(time), sdtime = sd(time), meancompl=mean(output_len), sdcompl=sd(output_len))
 
 ggplot(gdata, aes(factor(epsilon), time)) + 
   geom_boxplot(aes(color = Data), outlier.alpha=0.5) +
