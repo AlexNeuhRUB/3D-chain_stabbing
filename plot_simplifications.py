@@ -30,16 +30,16 @@ for d in dirs_stab:
         content = json.load(f)
         for i in range(len(content['Track ID'])):
             if content['Track ID'][i] in exp_stab_dict:
-                exp_stab_dict[content['Track ID'][i]].append({'inp': [content['Input lattitude'][i], content['Input longitude'][i]], 'out': [content['Output lattitude'][i], content['Output longitude'][i]]})
+                exp_stab_dict[content['Track ID'][i]].append({'inp': [content['Input lattitude'][i], content['Input longitude'][i]], 'out': [content['Output lattitude'][i], content['Output longitude'][i]], 'eps': content['epsilon'][i]})
             else:
-                exp_stab_dict[content['Track ID'][i]] = [{'inp': [content['Input lattitude'][i], content['Input longitude'][i]], 'out': [content['Output lattitude'][i], content['Output longitude'][i]]}]
+                exp_stab_dict[content['Track ID'][i]] = [{'inp': [content['Input lattitude'][i], content['Input longitude'][i]], 'out': [content['Output lattitude'][i], content['Output longitude'][i]], 'eps': content['epsilon'][i]}]
 
 tracks = list(exp_fred_dict.keys())
 
 for track in tracks:
 
-    plt.plot(exp_fred_dict[track][0]['inp'][0], exp_fred_dict[track][0]['inp'][1])
-    plt.plot(exp_fred_dict[track][0]['out'][0], np.array(exp_fred_dict[track][0]['out'][1]), "--")
+    plt.plot(exp_fred_dict[track][0]['inp'][0], exp_fred_dict[track][0]['inp'][1], 'r',linewidth=2)
+    plt.plot(exp_fred_dict[track][0]['out'][0], np.array(exp_fred_dict[track][0]['out'][1]), "b--")
 
     ax = plt.gca()
     ax.get_xaxis().set_visible(False)
@@ -54,8 +54,9 @@ for track in tracks:
     fig, axs = plt.subplots(3, 3)
     for i in range(3):
         for j in range(3):
-            axs[i,j].plot(exp_stab_dict[track][3*i+j]['inp'][0], exp_stab_dict[track][3*i+j]['inp'][1])
-            axs[i,j].plot(exp_stab_dict[track][3*i+j]['out'][0], np.array(exp_stab_dict[track][3*i+j]['out'][1]), "--")
+            print(exp_stab_dict[track][10*i+j]['eps'])
+            axs[i,j].plot(exp_stab_dict[track][10*i+j]['inp'][0], exp_stab_dict[track][10*i+j]['inp'][1], 'r', linewidth=2)
+            axs[i,j].plot(exp_stab_dict[track][10*i+j]['out'][0], np.array(exp_stab_dict[track][10*i+j]['out'][1]), "b--")
 
             axs[i,j].get_xaxis().set_visible(False)
             axs[i,j].get_yaxis().set_visible(False)
